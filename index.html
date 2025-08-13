@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Fietslease Simulator UZ Leuven</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #0078D7;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 20px;
+    }
+    .left-panel, .right-panel {
+      flex: 1;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 48%;
+      background: #0078D7;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4%;
+    }
+    .result, .tab, .disclaimer {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .result {
+      background: #e6f7ff;
+    }
+    .tab {
+      background: #fffbe6;
+    }
+    .disclaimer {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body onload="calculate(); calculateMaxBike();">
+  <div class="header">
+    <h1>🚲 Fietslease Simulator UZ Leuven</h1>
+  </div>
+
+  <div class="container">
+    <div class="left-panel">
+      <label>Werkpercentage (%):</label>
+      <input type="text" id="workPct" value="80">
+
+      <label>Bruto eindejaarspremie (100%) (€ Incl BTW):</label>
+      <input type="text" id="bonus" value="3273.13">
+
+      <label>Fietsprijs inclusief upgrades (€ Incl BTW):</label>
+      <input type="text" id="bikePrice" value="6500">
+
+      <label>Accessoireprijs (€ Incl BTW):</label>
+      <input type="text" id="accessoryPrice" value="300">
+
+      <label>Leasetermijn (maanden):</label>
+      <select id="leaseTerm">
+        <option value="36">36 maanden</option>
+        <option value="48">48 maanden</option>
+      </select>
+
+      <div class="button-row">
+        <button onclick="calculate()">Bereken</button>
+        <button onclick="exportResult()">📤 Exporteren</button>
+      </div>
+
+      <button onclick="exportSummary()">📥 Download Samenvatting</button>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <div class="right-panel">
+      <div class="tab">
+        <h3>📐 Maximale fietsprijs op basis van eindejaarspremie</h3>
+        <label>Bruto maandloon (€):</label>
+        <input type="text" id="monthSalary" value="4200">
+        <label>Werkregime (%):</label>
+        <input type="text" id="regime" value="80">
+        <label>Leasetermijn (maanden):</label>
+        <select id="maxLeaseTerm">
+          <option value="36">36 maanden</option>
+          <option value="48">48 maanden</option>
+        </select>
+        <button onclick="calculateMaxBike()">Bereken Maximale Fietsprijs</button>
+        <div id="maxBikeResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Disclaimer:</strong><br>
+    Deze simulatietool is uitsluitend bedoeld als informatief hulpmiddel en werd niet ontwikkeld door UZ Leuven. De maker van deze tool aanvaardt geen enkele aansprakelijkheid voor de juistheid, volledigheid of gevolgen van de berekeningen. Raadpleeg steeds de officiële communicatie van UZ Leuven voor bindende en actuele informatie.
+  </div>
+
+  <script>
+    function parseDecimal(value) {
+      return parseFloat(value.replace(',', '.'));
+    }
+
+    function calculate() {
+      const name = document.getElementById('name').value.trim();
+      const workPct = parseDecimal(document.getElementById('workPct').value) / 100;
+      const bonus100 = parseDecimal(document.getElementById('bonus').value);
+      const bikePrice = parseDecimal(document.getElementById('bikePrice').value);
+      const accessoryPrice = parseDecimal(document.getElementById('accessoryPrice').value);
+      const leaseTerm = parseInt(document.getElementById('leaseTerm').value);
+
+      const totalPrice = bikePrice + accessoryPrice;
+      const monthlyLease = totalPrice / leaseTerm;
+      const monthlyLoonruil = monthlyLease * 0.75;
+      const yearlyLoonruil = monthlyLoonruil * 12;
+
+      const brutoPremie = bonus100 * workPct;
+      const brutoOverschot = brutoPremie - yearlyLoonruil;
+      const nettoOverschot = brutoOverschot * 0.4589;
+      const totaalNettoOverschot = nettoOverschot * (leaseTerm / 12);
+
+      const restwaardeFiets = bikePrice * 0.1501;
+      const restwaardeAccessoires = accessoryPrice * 0.1501;
+
+      let resultText = `<strong>Resultaat${name ? ' voor ' + name : ''}:</strong><br><br>`;
+      resultText += `
+        📆 <strong>Maandelijkse leasekost:</strong> €${monthlyLease.toFixed(2)}<br>
+        💰 <strong>Bruto loonruil per maand:</strong> €${monthlyLoonruil.toFixed(2)}<br>
+        💰 <strong>Bruto loonruil per jaar:</strong> €${yearlyLoonruil.toFixed(2)}<br>
+        📊 <strong>Netto overschot per jaar:</strong> €${nettoOverschot.toFixed(2)}<br>
+        📊 <strong>Totaal netto overschot (${leaseTerm} maanden):</strong> €${totaalNettoOverschot.toFixed(2)}<br>
+        🔚 <strong>Overnameprijs fiets na lease:</strong> €${restwaardeFiets.toFixed(2)}<br>
+        🔚 <strong>Overnameprijs accessoires na lease:</strong> €${restwaardeAccessoires.toFixed(2)}<br><br>
+        📌 <em>De maandelijkse leasekost wordt jaarlijks verrekend via je eindejaarspremie. Je betaalt maandelijks dus niets.</em>
+      `;
+      document.getElementById('result').innerHTML = resultText;
+    }
+
+    function exportResult() {
+      const result = document.getElementById('result').innerText;
+      const blob = new Blob([result], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'fietslease_simulatie.txt';
+      link.click();
+    }
+
+    function exportSummary() {
+      const result1 = document.getElementById('result').innerText;
+      const result2 = document.getElementById('maxBikeResult').innerText;
+      const combined = `--- Simulatie fietslease ---\n\n${result1}\n\n--- Maximale fietsprijs ---\n\n${result2}`;
+      const blob = new Blob([combined], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'fietslease_samenvatting.txt';
+      link.click();
+    }
+    function calculateMaxBike() {
+  const salary = parseDecimal(document.getElementById('monthSalary').value); // brutomaandloon
+  const regime = parseDecimal(document.getElementById('regime').value) / 100; // werkregime
+  const leaseTerm = parseInt(document.getElementById('maxLeaseTerm').value); // looptijd
+  const bonusMax = parseDecimal(document.getElementById('bonus').value); // opgegeven max eindejaarspremie
+
+  // Realistische raming: brutoloon × 0.85 (bonuspercentage) × werkregime
+  const bonusPercentage = 0.85;
+  let brutoPremie = salary * bonusPercentage * regime;
+
+  // Beperk tot opgegeven maximum
+  if (brutoPremie > bonusMax) {
+    brutoPremie = bonusMax;
+  }
+
+  // Netto berekening volgens jouw formule
+  const nettoPremie = 0.3636 * brutoPremie + 1716.22;
+
+  // Leasekost en maximale fietsprijs
+  const leasePerMonth = brutoPremie / 12;
+  const maxBikePrice = leasePerMonth * leaseTerm;
+
+  document.getElementById('maxBikeResult').innerHTML = `
+    💼 <strong>Raming jaarlijkse bruto eindejaarspremie:</strong> €${brutoPremie.toFixed(2)}<br>
+    💶 <strong>Geschatte netto eindejaarspremie:</strong> €${nettoPremie.toFixed(2)}<br>
+    📆 <strong>Maximale leasekost per maand:</strong> €${leasePerMonth.toFixed(2)}<br>
+    🚲 <strong>Maximale fietsprijs (Incl BTW):</strong> €${maxBikePrice.toFixed(2)}
+  `;
+}
+  </script>
+</body>
+</html>
+
+	

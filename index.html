@@ -85,9 +85,9 @@
 <body onload="calculate();">
 
   <div class="header">
-    <h1>🚲 Fietslease Simulator Eindejaarspremie UZ Leuven</h1>
+    <h1>🚲 Fietslease Simulator Eindejaarspremie (EJP) UZ Leuven</h1>
     <span class="subtext">
-      Deze tool biedt een indicatieve berekening van het resterende netto bedrag van uw jaarlijkse eindejaarspremie.
+      Deze tool biedt een indicatieve berekening van het resterende netto bedrag van uw jaarlijkse eindejaarspremie (EJP)
     </span>
   </div>
 
@@ -99,10 +99,10 @@
       <label>Bruto eindejaarspremie (100%):<span class="subtext"> (zie loonfiche "oktober (2)")</span></label>
       <input type="text" id="bonus" value="3273.13">
 
-      <label>Fietsprijs: <span class="subtext">(Incl BTW) (De basisprijs van de fiets met prestatie-verbeterende aanpassingen, zoals een betere accu of geavanceerdere remmen)</span></label>
+      <label>Fietsprijs: <span class="subtext">(Incl BTW) (De basisprijs van de fiets met prestatie-verbeterende aanpassingen, zoals een betere accu of geavanceerdere remmen + eventuele administratiekosten en BEBAT)</span></label>
       <input type="text" id="bikePrice" value="6500">
 
-      <label>Accessoiresprijs: <span class="subtext">(Incl BTW) (Extra onderdelen voor comfort, gemak of veiligheid, zoals een fietstas, helm, slot of verlichting)</span></label>
+      <label>Accessoiresprijs: <span class="subtext">(Incl BTW) (Extra onderdelen voor comfort, gemak of veiligheid, zoals een fietstas, helm, slot, spatlap, verlichting of extra service)</span></label>
       <input type="text" id="accessoryPrice" value="300">
 
       <label>Leasetermijn:</label>
@@ -159,8 +159,8 @@
         📆 <strong>Maandelijkse leasekost:</strong> €${monthlyLease.toFixed(2)}<br>
         💰 <strong>Bruto loonruil per maand:</strong> €${monthlyLoonruil.toFixed(2)}<br>
         💰 <strong>Bruto loonruil per jaar:</strong> €${yearlyLoonruil.toFixed(2)}<br>
-        📊 <strong>Netto overschot per jaar:</strong> €${nettoOverschot.toFixed(2)}<br>
-        📊 <strong>Totaal netto overschot (${leaseTerm} maanden):</strong> €${totaalNettoOverschot.toFixed(2)}<br>
+        📊 <strong>Netto overschot EJP per jaar:</strong> €${nettoOverschot.toFixed(2)}<br>
+        📊 <strong>Totaal netto overschot EJP na ${leaseTerm} maanden:</strong> €${totaalNettoOverschot.toFixed(2)}<br>
         🔚 <strong>Overnameprijs fiets na lease:</strong> €${restwaardeFiets.toFixed(2)}<br>
         🔚 <strong>Overnameprijs accessoires na lease:</strong> €${restwaardeAccessoires.toFixed(2)}<br><br>
         📌 <em>De maandelijkse leasekost wordt jaarlijks verrekend via uw eindejaarspremie. Er gaat dus maandelijks niets van uw nettoloon.</em>

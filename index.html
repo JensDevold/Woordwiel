@@ -3,50 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <title>Fietslease Simulator UZ Leuven</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
+      background-color: #f0f4f8;
       color: #333;
+      margin: 0;
       padding: 20px;
     }
+
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       margin-bottom: 20px;
     }
-    h1 {
+
+    .header h1 {
+      font-size: 1.2em;
       color: #0078D7;
       margin: 0;
-	  font-size: 1.2em; /* kleiner dan standaard */
     }
+
     .subtext {
       font-size: 12px;
       color: #888;
-      font-weight: normal;
+      margin-top: 4px;
     }
+
     .container {
+      display: flex;
+      gap: 40px;
       max-width: 1200px;
       margin: auto;
       background: white;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .left-panel, .right-panel {
+      flex: 1;
       display: flex;
-      gap: 40px;
+      flex-direction: column;
     }
-    .left-panel {
-      flex: 1;
-    }
+
     .right-panel {
-      flex: 1;
+      background-color: #e6f7ff;
+      padding: 20px;
+      border-radius: 10px;
     }
+
     label {
-      display: block;
       margin-top: 15px;
       font-weight: bold;
     }
+
     input, select {
       width: 100%;
       padding: 8px;
@@ -54,8 +64,15 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
-    button {
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4%;
       margin-top: 20px;
+    }
+
+    button {
       padding: 10px;
       width: 48%;
       background: #0078D7;
@@ -64,21 +81,22 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    .button-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 4%;
-    }
+
     .result {
-      background: #e6f7ff;
+      background: #ffffff;
       padding: 15px;
       border-radius: 5px;
       margin-top: 20px;
     }
+
     .disclaimer {
-      font-size: 0.9em;
-      color: #666;
-      margin-top: 20px;
+      font-size: 0.65em;
+      color: #555;
+      margin-top: 30px;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-left: 4px solid #a3c2f2;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -86,9 +104,9 @@
 
   <div class="header">
     <h1>🚲 Fietslease Simulator Eindejaarspremie (EJP) UZ Leuven</h1>
-    <span class="subtext">
+    <div class="subtext">
       Deze tool biedt een indicatieve berekening van het resterende netto bedrag van uw jaarlijkse eindejaarspremie (EJP)
-    </span>
+    </div>
   </div>
 
   <div class="container">
@@ -99,10 +117,10 @@
       <label>Bruto eindejaarspremie (100%):<span class="subtext"> (zie loonfiche "oktober (2)")</span></label>
       <input type="text" id="bonus" value="3250">
 
-      <label>Fietsprijs: <span class="subtext">(Incl BTW) (De basisprijs van de fiets met prestatie-verbeterende aanpassingen, zoals een betere accu of geavanceerdere remmen + eventuele administratiekosten en BEBAT)</span></label>
+      <label>Fietsprijs: <span class="subtext">(Incl BTW)</span></label>
       <input type="text" id="bikePrice" value="7500">
 
-      <label>Accessoiresprijs: <span class="subtext">(Incl BTW) (Extra onderdelen voor comfort, gemak of veiligheid, zoals een fietstas, helm, slot, spatlap, verlichting of extra service)</span></label>
+      <label>Accessoiresprijs: <span class="subtext">(Incl BTW)</span></label>
       <input type="text" id="accessoryPrice" value="350">
 
       <label>Leasetermijn:</label>
@@ -115,18 +133,15 @@
         <button onclick="calculate()">Bereken</button>
         <button onclick="exportResult()">📤 Exporteren</button>
       </div>
-
-      
     </div>
 
     <div class="right-panel">
       <div class="result" id="result"></div>
+      <div class="disclaimer">
+        <strong>Disclaimer:</strong><br>
+        Deze simulatietool dient uitsluitend als informatief hulpmiddel. UZ Leuven is niet de ontwikkelaar. De maker is niet aansprakelijk voor de juistheid, volledigheid of eventuele gevolgen van de berekeningen. Raadpleeg altijd de officiële communicatie van UZ Leuven voor bindende en actuele informatie.
+      </div>
     </div>
-  </div>
-
-  <div class="disclaimer">
-    <strong>Disclaimer:</strong><br>
-    Deze simulatietool is uitsluitend bedoeld als informatief hulpmiddel en werd niet ontwikkeld door UZ Leuven. De maker van deze tool aanvaardt geen enkele aansprakelijkheid voor de juistheid, volledigheid of gevolgen van de berekeningen. Raadpleeg steeds de officiële communicatie van UZ Leuven voor bindende en actuele informatie.
   </div>
 
   <script>
@@ -179,3 +194,4 @@
   </script>
 </body>
 </html>
+

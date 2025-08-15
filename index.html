@@ -15,16 +15,17 @@
 
     .header {
       margin-bottom: 20px;
+      text-align: center;
     }
 
     .header h1 {
-      font-size: 1.2em;
+      font-size: 1.1em;
       color: #0078D7;
       margin: 0;
     }
 
     .subtext {
-      font-size: 12px;
+      font-size: 11px;
       color: #888;
       margin-top: 4px;
     }
@@ -46,53 +47,102 @@
       flex-direction: column;
     }
 
-    .right-panel {
-      background-color: #e6f7ff;
-      padding: 20px;
-      border-radius: 10px;
+    .left-panel {
+      gap: 5px;
     }
-
+    
     label {
-      margin-top: 15px;
+      margin-top: 8px;
       font-weight: bold;
+      font-size: 13px;
     }
 
     input, select {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
+      padding: 5px;
+      margin-top: 2px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 13px;
+    }
+
+    .right-panel {
+      background-color: #e6f7ff;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .top-link {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
     }
 
     .button-row {
       display: flex;
       justify-content: space-between;
       gap: 4%;
-      margin-top: 20px;
+      margin-top: 10px;
     }
 
     button {
-      padding: 10px;
+      padding: 8px;
       width: 48%;
       background: #0078D7;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 13px;
+    }
+
+    .link-button {
+      display: inline-block;
+      padding: 5px 10px;
+      background-color: #28a745; /* Nieuwe kleur */
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 12px;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+
+    .link-button:hover {
+      background-color: #218838; /* Aangepaste hover-kleur */
     }
 
     .result {
       background: #ffffff;
       padding: 15px;
       border-radius: 5px;
-      margin-top: 20px;
+      margin-top: 10px;
+      width: 100%;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    
+    .result strong {
+        font-size: 1.1em;
+    }
+    
+    .result br {
+        line-height: 0.1;
+    }
+
+    .result em {
+      font-size: 0.9em;
+      line-height: 1.2;
     }
 
     .disclaimer {
-      font-size: 0.65em;
+      font-size: 0.7em;
       color: #555;
-      margin-top: 30px;
+      margin-top: 10px;
       background-color: #f9f9f9;
       padding: 10px;
       border-left: 4px solid #a3c2f2;
@@ -103,10 +153,9 @@
 <body onload="calculate();">
 
   <div class="header">
-    <h1>🚲 Fietslease Eindejaarspremie (EJP) Simulator UZ Leuven</h1>
+    <h1>🚲 Fietslease Simulator Eindejaarspremie (EJP) UZ Leuven</h1>
     <div class="subtext">
-      Deze tool biedt een indicatieve berekening van het resterende netto bedrag van uw jaarlijkse eindejaarspremie (EJP) -                    <a href="https://www.bit.ly/UZLeuven-Simulatietool" target="_blank">Klik hier voor de UZLeuven-Simulatietool.</a> Deze helpt u om uw maximaal leasebudget te berekenen.
-
+      Deze tool biedt een indicatieve berekening van het resterende netto bedrag van uw jaarlijkse eindejaarspremie (EJP)
     </div>
   </div>
 
@@ -137,10 +186,13 @@
     </div>
 
     <div class="right-panel">
+      <div class="top-link">
+          <a href="https://www.bit.ly/UZLeuven-Simulatietool" target="_blank" class="link-button">UZLeuven-Simulatietool berekening maximaal leasebudget</a>
+      </div>
       <div class="result" id="result"></div>
       <div class="disclaimer">
         <strong>Disclaimer:</strong><br>
-        Deze simulatietool dient uitsluitend als informatief hulpmiddel. UZ Leuven is niet de ontwikkelaar. De maker is niet aansprakelijk voor de juistheid, volledigheid of eventuele gevolgen van de berekeningen. Raadpleeg altijd de officiële communicatie van UZ Leuven voor bindende en actuele informatie.
+        Deze simulatietool is uitsluitend bedoeld als informatief hulpmiddel en werd niet ontwikkeld door UZ Leuven. De maker van deze tool aanvaardt geen enkele aansprakelijkheid voor de juistheid, volledigheid of gevolgen van de berekeningen. Raadpleeg steeds de officiële communicatie van UZ Leuven voor bindende en actuele informatie.
       </div>
     </div>
   </div>
@@ -179,7 +231,7 @@
         📊 <strong>Totaal netto overschot EJP na ${leaseTerm} maanden:</strong> €${totaalNettoOverschot.toFixed(2)}<br>
         🔚 <strong>Overnameprijs fiets na lease:</strong> €${restwaardeFiets.toFixed(2)}<br>
         🔚 <strong>Overnameprijs accessoires na lease:</strong> €${restwaardeAccessoires.toFixed(2)}<br><br>
-        📌 <em>De maandelijkse leasekost wordt jaarlijks verrekend via uw eindejaarspremie. Er gaat dus niets van uw maandelijks nettoloon.</em>
+        📌 <em>De maandelijkse leasekost wordt jaarlijks verrekend via uw eindejaarspremie. Er gaat dus maandelijks niets van uw nettoloon.</em>
       `;
       document.getElementById('result').innerHTML = resultText;
     }
@@ -195,6 +247,3 @@
   </script>
 </body>
 </html>
-
-
-

@@ -219,6 +219,36 @@
         color: #b0b0b0;
         border-left: 4px solid #5c85d6;
     }
+    
+    /* Media query voor mobiele schermen */
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+
+        .container {
+            flex-direction: column;
+            gap: 20px;
+            padding: 15px;
+        }
+
+        .header h1 {
+            font-size: 1em;
+        }
+
+        #theme-toggle {
+            top: 10px;
+            right: 10px;
+        }
+        
+        .result {
+            font-size: 12px;
+        }
+        
+        .result strong {
+            font-size: 1em;
+        }
+    }
   </style>
 </head>
 <body onload="calculate();">

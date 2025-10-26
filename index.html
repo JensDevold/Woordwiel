@@ -125,9 +125,7 @@
     <h1>🎨 Woordwiel: Creatieve Vrijheid</h1>
     <p>Gebruik de letters en zorg dat elk woord de <strong>middelste letter E</strong> bevat. Minstens 4 letters!</p>
 
-    <div class="circle-container" id="woordwiel">
-      <div class="letter center" data-letter="E">E</div>
-    </div>
+    <div class="circle-container" id="woordwiel"></div>
 
     <button id="controleerKnop" onclick="controleerWoord()">➡️</button>
 
@@ -200,35 +198,47 @@ let klikGeschiedenis = [];
 
 function renderLetters() {
   const container = document.getElementById('woordwiel');
-  container.innerHTML = '<div class="letter center" data-letter="E">E</div>';
+  container.innerHTML = '';
+
+  // Centrale letter met unieke ID
+  const centerDiv = document.createElement('div');
+  centerDiv.className = 'letter center';
+  centerDiv.setAttribute('data-letter', centerLetter);
+  centerDiv.setAttribute('data-id', 'center');
+  centerDiv.textContent = centerLetter;
+  centerDiv.onclick = () => toggleLetter(centerLetter, 'center');
+  container.appendChild(centerDiv);
+
+  // Randletters met unieke ID's
   const total = outerLetters.length;
   outerLetters.forEach((letter, i) => {
     const angle = (360 / total) * i;
     const div = document.createElement('div');
     div.className = 'letter';
     div.setAttribute('data-letter', letter);
+    div.setAttribute('data-id', `outer-${i}`);
     div.style.setProperty('--angle', angle + 'deg');
     div.textContent = letter;
-    div.onclick = () => toggleLetter(letter);
+    div.onclick = () => toggleLetter(letter, `outer-${i}`);
     container.appendChild(div);
   });
 }
 
-function toggleLetter(letter) {
+function toggleLetter(letter, id) {
   const lower = letter.toLowerCase();
   const max = letterLimieten[letter.toUpperCase()] || 0;
-  const huidigeAantal = klikGeschiedenis.filter(l => l === lower).length;
+  const huidigeAantal = klikGeschiedenis.filter(k => k.letter === lower).length;
 
   if (huidigeAantal < max) {
-    klikGeschiedenis.push(lower);
+    klikGeschiedenis.push({ letter: lower, id });
   } else {
-    const index = klikGeschiedenis.lastIndexOf(lower);
+    const index = klikGeschiedenis.map(k => k.id).lastIndexOf(id);
     if (index !== -1) {
       klikGeschiedenis.splice(index, 1);
     }
   }
 
-  document.getElementById('inputwoord').value = klikGeschiedenis.join('');
+  document.getElementById('inputwoord').value = klikGeschiedenis.map(k => k.letter).join('');
   updateLetterHighlights();
   startTimer();
 }
@@ -237,22 +247,9 @@ function updateLetterHighlights() {
   const letters = document.querySelectorAll('.letter');
   letters.forEach(el => el.classList.remove('highlight'));
 
-  const telling = {};
-  klikGeschiedenis.forEach(l => {
-    telling[l] = (telling[l] || 0) + 1;
-  });
-
-  const gebruikt = {};
-
-  letters.forEach(el => {
-    const l = el.getAttribute('data-letter').toLowerCase();
-    const max = letterLimieten[l.toUpperCase()] || 0;
-    gebruikt[l] = (gebruikt[l] || 0);
-
-    if ((telling[l] || 0) > gebruikt[l] && gebruikt[l] < max) {
-      el.classList.add('highlight');
-      gebruikt[l]++;
-    }
+  klikGeschiedenis.forEach(k => {
+    const el = document.querySelector(`.letter[data-id="${k.id}"]`);
+    if (el) el.classList.add('highlight');
   });
 }
 function startTimer() {
@@ -293,17 +290,17 @@ function filterInput() {
     if (!letterLimieten[upper]) continue;
     telling[upper] = (telling[upper] || 0) + 1;
     if (telling[upper] <= letterLimieten[upper]) {
-      gefilterd.push(letter);
+      gefilterd.push({ letter, id: null }); // geen ID bij handmatige invoer
     }
   }
 
   klikGeschiedenis = gefilterd;
-  input.value = klikGeschiedenis.join('');
+  input.value = klikGeschiedenis.map(k => k.letter).join('');
   updateLetterHighlights();
 }
 
 function controleerWoord() {
-  const invoer = klikGeschiedenis.join('');
+  const invoer = klikGeschiedenis.map(k => k.letter).join('');
   const resultaat = document.getElementById('resultaat');
   const lijst = document.getElementById('gevonden');
 

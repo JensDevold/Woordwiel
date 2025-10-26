@@ -196,6 +196,7 @@ let timerInterval;
 let hintIndex = 0;
 let hintsGebruikt = 0;
 let vuurwerkInterval;
+let klikGeschiedenis = [];
 
 function renderLetters() {
   const container = document.getElementById('woordwiel');
@@ -214,28 +215,45 @@ function renderLetters() {
 }
 
 function toggleLetter(letter) {
-  const input = document.getElementById('inputwoord');
-  const waarde = input.value.toLowerCase();
   const lower = letter.toLowerCase();
+  const max = letterLimieten[letter.toUpperCase()] || 0;
+  const huidigeAantal = klikGeschiedenis.filter(l => l === lower).length;
 
-  // Verwijder de eerste instantie van de aangeklikte letter
-  let index = waarde.indexOf(lower);
-  if (index !== -1) {
-    input.value = waarde.slice(0, index) + waarde.slice(index + 1);
+  if (huidigeAantal < max) {
+    klikGeschiedenis.push(lower);
   } else {
-    // Voeg toe als binnen limiet
-    const telling = {};
-    for (let l of waarde) {
-      telling[l] = (telling[l] || 0) + 1;
-    }
-    const upper = letter.toUpperCase();
-    if ((telling[lower] || 0) < (letterLimieten[upper] || 0)) {
-      input.value += lower;
+    const index = klikGeschiedenis.lastIndexOf(lower);
+    if (index !== -1) {
+      klikGeschiedenis.splice(index, 1);
     }
   }
 
-  filterInput();
+  document.getElementById('inputwoord').value = klikGeschiedenis.join('');
+  updateLetterHighlights();
   startTimer();
+}
+
+function updateLetterHighlights() {
+  const letters = document.querySelectorAll('.letter');
+  letters.forEach(el => el.classList.remove('highlight'));
+
+  const telling = {};
+  klikGeschiedenis.forEach(l => {
+    telling[l] = (telling[l] || 0) + 1;
+  });
+
+  const gebruikt = {};
+
+  letters.forEach(el => {
+    const l = el.getAttribute('data-letter').toLowerCase();
+    const max = letterLimieten[l.toUpperCase()] || 0;
+    gebruikt[l] = (gebruikt[l] || 0);
+
+    if ((telling[l] || 0) > gebruikt[l] && gebruikt[l] < max) {
+      el.classList.add('highlight');
+      gebruikt[l]++;
+    }
+  });
 }
 function startTimer() {
   if (!timerStarted) {
@@ -259,7 +277,8 @@ function handleKey(e) {
   if (e.key === 'Enter') {
     controleerWoord();
     document.getElementById('inputwoord').value = '';
-    updateLetterHighlights('');
+    klikGeschiedenis = [];
+    updateLetterHighlights();
   }
 }
 
@@ -267,47 +286,24 @@ function filterInput() {
   const input = document.getElementById('inputwoord');
   let waarde = input.value.toLowerCase().replace(/[^a-z]/g, '');
   let telling = {};
-  let gefilterd = '';
+  let gefilterd = [];
 
   for (let letter of waarde) {
     const upper = letter.toUpperCase();
     if (!letterLimieten[upper]) continue;
     telling[upper] = (telling[upper] || 0) + 1;
     if (telling[upper] <= letterLimieten[upper]) {
-      gefilterd += letter;
+      gefilterd.push(letter);
     }
   }
 
-  input.value = gefilterd;
-  updateLetterHighlights(gefilterd);
-}
-
-function updateLetterHighlights(gefilterd) {
-  const telling = {};
-  for (let l of gefilterd) {
-    const upper = l.toUpperCase();
-    telling[upper] = (telling[upper] || 0) + 1;
-  }
-
-  const letters = document.querySelectorAll('.letter');
-  const gebruikt = {};
-
-  letters.forEach(el => {
-    const l = el.getAttribute('data-letter').toUpperCase();
-    const max = letterLimieten[l] || 0;
-    gebruikt[l] = (gebruikt[l] || 0);
-
-    if ((telling[l] || 0) > gebruikt[l] && gebruikt[l] < max) {
-      el.classList.add('highlight');
-      gebruikt[l]++;
-    } else {
-      el.classList.remove('highlight');
-    }
-  });
+  klikGeschiedenis = gefilterd;
+  input.value = klikGeschiedenis.join('');
+  updateLetterHighlights();
 }
 
 function controleerWoord() {
-  const invoer = document.getElementById('inputwoord').value.toLowerCase();
+  const invoer = klikGeschiedenis.join('');
   const resultaat = document.getElementById('resultaat');
   const lijst = document.getElementById('gevonden');
 
@@ -345,9 +341,10 @@ function controleerWoord() {
       const nieuwItem = document.createElement('li');
       nieuwItem.innerText = `${invoer} (${uitleg})`;
       lijst.appendChild(nieuwItem);
-      updateLetterHighlights('');
-      document.getElementById('resultaat').innerText = '';
+      klikGeschiedenis = [];
       document.getElementById('inputwoord').value = '';
+      updateLetterHighlights();
+      document.getElementById('resultaat').innerText = '';
       if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
         toonJanPopup();
       }
@@ -380,7 +377,8 @@ function toonHint() {
     document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
     document.getElementById('resultaat').innerText = '';
     hintIndex++;
-    updateLetterHighlights('');
+    klikGeschiedenis = [];
+    updateLetterHighlights();
     if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
       toonJanPopup();
     }
@@ -401,7 +399,8 @@ function toonOplossing() {
   document.getElementById('score').innerText = "Score: " + score;
   document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
   document.getElementById('resultaat').innerText = '';
-  updateLetterHighlights('');
+  klikGeschiedenis = [];
+  updateLetterHighlights();
   toonJanPopup();
 }
 
@@ -413,6 +412,7 @@ function resetSpel() {
   timerPaused = false;
   hintIndex = 0;
   hintsGebruikt = 0;
+  klikGeschiedenis = [];
   clearInterval(timerInterval);
   document.getElementById('inputwoord').value = '';
   document.getElementById('gevonden').innerHTML = '';
@@ -420,7 +420,7 @@ function resetSpel() {
   document.getElementById('totaal').innerText = `Woorden gevonden: 0 / ${Object.keys(woordenUitleg).length}`;
   document.getElementById('timer').innerText = "Tijd: 0:00";
   document.getElementById('resultaat').innerText = '';
-  updateLetterHighlights('');
+  updateLetterHighlights();
   renderLetters();
 }
 

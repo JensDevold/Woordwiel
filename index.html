@@ -363,6 +363,14 @@ function filterInput() {
   input.value = klikGeschiedenis.map(k => k.letter).join('');
   updateLetterHighlights();
 }
+
+function rotateLetters() {
+  outerLetters = outerLetters.sort(() => Math.random() - 0.5);
+  klikGeschiedenis = [];
+  document.getElementById('inputwoord').value = '';
+  updateLetterHighlights();
+  renderLetters();
+}
 function startTimer() {
   if (!timerStarted) {
     timerStarted = true;
@@ -442,11 +450,6 @@ function controleerWoord() {
   } else {
     resultaat.innerText = "❌ Geen geldig woord in deze puzzel.";
   }
-}
-
-function rotateLetters() {
-  outerLetters = outerLetters.sort(() => Math.random() - 0.5);
-  renderLetters();
 }
 
 function toonHint() {

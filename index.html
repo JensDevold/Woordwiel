@@ -3,24 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <title>Woordwiel: Creatieve Vrijheid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+    }
+
+    #theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 0.8em;
+      background: none;
+      border: 1px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      z-index: 1000;
+      width: 110px;
       text-align: center;
     }
+
+    body:not(.dark-mode) #theme-toggle {
+      border: 1px solid #333;
+      color: #333;
+    }
+
     #spel, #woordenlijst {
       display: inline-block;
       vertical-align: top;
       width: 45%;
       margin: 10px;
     }
+
     .circle-container {
       position: relative;
       width: 250px;
       height: 250px;
       margin: 0 auto 10px auto;
     }
+
     .letter {
       position: absolute;
       width: 50px;
@@ -36,15 +71,27 @@
       transition: background-color 0.3s;
       cursor: pointer;
     }
+
     .center {
       top: 50%;
       left: 50%;
       background-color: #66ccff;
     }
+
     .circle-container .letter:not(.center) {
       top: calc(50% + 90px * sin(var(--angle)));
       left: calc(50% + 90px * cos(var(--angle)));
     }
+
+    body.dark-mode .letter {
+      background-color: #333;
+      color: #eee;
+    }
+
+    body.dark-mode .center {
+      background-color: #3399cc;
+    }
+
     #controleerKnop {
       margin-top: 10px;
       font-size: 20px;
@@ -54,29 +101,50 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
+    body.dark-mode #controleerKnop {
+      background-color: #3399cc;
+      color: white;
+    }
+
     input, button {
       padding: 10px;
       font-size: 16px;
       margin: 5px;
       width: 80%;
     }
+
+    body.dark-mode input, body.dark-mode button {
+      background-color: #2a2a2a;
+      color: #e0e0e0;
+      border: 1px solid #555;
+    }
+
     #resultaat {
       font-size: 18px;
       font-weight: bold;
       color: #cc0000;
       margin-bottom: 10px;
     }
+
+    body.dark-mode #resultaat {
+      color: #ff6666;
+    }
+
     #score, #timer, #totaal {
       font-size: 18px;
       margin-top: 10px;
     }
+
     ul {
       list-style-type: none;
       padding-left: 0;
     }
+
     li {
       margin-bottom: 6px;
     }
+
     #janPopup {
       display: none;
       position: fixed;
@@ -88,6 +156,7 @@
       color: white;
       padding-top: 100px;
     }
+
     #janPopup div {
       background: #ff69b4;
       margin: 0 auto;
@@ -96,6 +165,12 @@
       width: 500px;
       box-shadow: 0 0 20px white;
     }
+
+    body.dark-mode #janPopup div {
+      background: #cc4c99;
+      box-shadow: 0 0 20px #999;
+    }
+
     #vuurwerk {
       position: fixed;
       top: 0; left: 0;
@@ -103,6 +178,7 @@
       pointer-events: none;
       z-index: 9999;
     }
+
     #vuurwerk div {
       width: 10px;
       height: 10px;
@@ -110,16 +186,23 @@
       position: absolute;
       animation: explode 3s ease-out forwards;
     }
+
     @keyframes explode {
       0% { transform: scale(0); opacity: 1; }
       100% { transform: scale(3); opacity: 0; }
     }
+
     .highlight {
       background-color: #ffcc00 !important;
+    }
+
+    body.dark-mode .highlight {
+      background-color: #d4a900 !important;
     }
   </style>
 </head>
 <body>
+  <button id="theme-toggle" onclick="toggleTheme()">🌙 Donker / Licht</button>
 
   <div id="spel">
     <h1>🎨 Woordwiel: Creatieve Vrijheid</h1>
@@ -157,6 +240,10 @@
   <div id="vuurwerk"></div>
 
 <script>
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+}
+
 const centerLetter = 'E';
 let outerLetters = ['P', 'N', 'S', 'I', 'O', 'E', 'N'];
 const letterLimieten = { P: 1, E: 2, N: 2, S: 1, I: 1, O: 1 };
@@ -200,7 +287,6 @@ function renderLetters() {
   const container = document.getElementById('woordwiel');
   container.innerHTML = '';
 
-  // Centrale letter met unieke ID
   const centerDiv = document.createElement('div');
   centerDiv.className = 'letter center';
   centerDiv.setAttribute('data-letter', centerLetter);
@@ -209,7 +295,6 @@ function renderLetters() {
   centerDiv.onclick = () => toggleLetter(centerLetter, 'center');
   container.appendChild(centerDiv);
 
-  // Randletters met unieke ID's
   const total = outerLetters.length;
   outerLetters.forEach((letter, i) => {
     const angle = (360 / total) * i;
@@ -249,17 +334,10 @@ function updateLetterHighlights() {
   const letters = document.querySelectorAll('.letter');
   letters.forEach(el => el.classList.remove('highlight'));
 
-  // Maak een kopie van klikGeschiedenis
-  const over = [...klikGeschiedenis];
-
-  letters.forEach(el => {
-    const l = el.getAttribute('data-letter').toLowerCase();
-    const id = el.getAttribute('data-id');
-
-    const index = over.findIndex(k => k.letter === l);
-    if (index !== -1) {
-      el.classList.add('highlight');
-      over.splice(index, 1);
+  klikGeschiedenis.forEach(k => {
+    if (k.id) {
+      const el = document.querySelector(`.letter[data-id="${k.id}"]`);
+      if (el) el.classList.add('highlight');
     }
   });
 }

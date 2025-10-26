@@ -232,9 +232,11 @@ function toggleLetter(letter, id) {
   if (huidigeAantal < max) {
     klikGeschiedenis.push({ letter: lower, id });
   } else {
-    const index = klikGeschiedenis.map(k => k.id).lastIndexOf(id);
-    if (index !== -1) {
-      klikGeschiedenis.splice(index, 1);
+    for (let i = klikGeschiedenis.length - 1; i >= 0; i--) {
+      if (klikGeschiedenis[i].letter === lower && klikGeschiedenis[i].id === id) {
+        klikGeschiedenis.splice(i, 1);
+        break;
+      }
     }
   }
 
@@ -247,10 +249,38 @@ function updateLetterHighlights() {
   const letters = document.querySelectorAll('.letter');
   letters.forEach(el => el.classList.remove('highlight'));
 
-  klikGeschiedenis.forEach(k => {
-    const el = document.querySelector(`.letter[data-id="${k.id}"]`);
-    if (el) el.classList.add('highlight');
+  // Maak een kopie van klikGeschiedenis
+  const over = [...klikGeschiedenis];
+
+  letters.forEach(el => {
+    const l = el.getAttribute('data-letter').toLowerCase();
+    const id = el.getAttribute('data-id');
+
+    const index = over.findIndex(k => k.letter === l);
+    if (index !== -1) {
+      el.classList.add('highlight');
+      over.splice(index, 1);
+    }
   });
+}
+
+function filterInput() {
+  const input = document.getElementById('inputwoord');
+  let waarde = input.value.toLowerCase().replace(/[^a-z]/g, '');
+  let telling = {};
+  klikGeschiedenis = [];
+
+  for (let letter of waarde) {
+    const upper = letter.toUpperCase();
+    if (!letterLimieten[upper]) continue;
+    telling[upper] = (telling[upper] || 0) + 1;
+    if (telling[upper] <= letterLimieten[upper]) {
+      klikGeschiedenis.push({ letter, id: null });
+    }
+  }
+
+  input.value = klikGeschiedenis.map(k => k.letter).join('');
+  updateLetterHighlights();
 }
 function startTimer() {
   if (!timerStarted) {
@@ -277,26 +307,6 @@ function handleKey(e) {
     klikGeschiedenis = [];
     updateLetterHighlights();
   }
-}
-
-function filterInput() {
-  const input = document.getElementById('inputwoord');
-  let waarde = input.value.toLowerCase().replace(/[^a-z]/g, '');
-  let telling = {};
-  let gefilterd = [];
-
-  for (let letter of waarde) {
-    const upper = letter.toUpperCase();
-    if (!letterLimieten[upper]) continue;
-    telling[upper] = (telling[upper] || 0) + 1;
-    if (telling[upper] <= letterLimieten[upper]) {
-      gefilterd.push({ letter, id: null }); // geen ID bij handmatige invoer
-    }
-  }
-
-  klikGeschiedenis = gefilterd;
-  input.value = klikGeschiedenis.map(k => k.letter).join('');
-  updateLetterHighlights();
 }
 
 function controleerWoord() {

@@ -141,10 +141,7 @@
     <button onclick="toonOplossing()">🧩 Toon oplossing</button>
     <button onclick="resetSpel()">🔄 Reset spel</button>
 
-    <div id="score">Score: 0</div>
-    <div id="totaal">Woorden gevonden: 0 / 21</div>
-    <div id="timer">Tijd: 0:00</div>
-  </div>
+    <div id="score">
 <div id="woordenlijst">
     <h3>🧠 Gevonden woorden</h3>
     <ul id="gevonden"></ul>
@@ -209,17 +206,33 @@ function renderLetters() {
     div.setAttribute('data-letter', letter);
     div.style.setProperty('--angle', angle + 'deg');
     div.textContent = letter;
-    div.onclick = () => voegLetterToe(letter);
+    div.onclick = () => toggleLetter(letter);
     container.appendChild(div);
   });
 }
-function voegLetterToe(letter) {
+
+function toggleLetter(letter) {
   const input = document.getElementById('inputwoord');
-  input.value += letter.toLowerCase();
+  const waarde = input.value.toLowerCase();
+  const lower = letter.toLowerCase();
+
+  if (waarde.includes(lower)) {
+    const index = waarde.lastIndexOf(lower);
+    input.value = waarde.slice(0, index) + waarde.slice(index + 1);
+  } else {
+    const telling = {};
+    for (let l of waarde) {
+      telling[l] = (telling[l] || 0) + 1;
+    }
+    const upper = letter.toUpperCase();
+    if ((telling[lower] || 0) < (letterLimieten[upper] || 0)) {
+      input.value += lower;
+    }
+  }
+
   filterInput();
   startTimer();
 }
-
 function startTimer() {
   if (!timerStarted) {
     timerStarted = true;
@@ -354,13 +367,13 @@ function toonHint() {
     const uitleg = woordenUitleg[hintWoord];
     const lijst = document.getElementById('gevonden');
     const nieuwItem = document.createElement('li');
-    nieuwItem.innerText = `${hintWoord} (${uitleg})`;
+    nieuwItem.innerText = ${hintWoord} (${uitleg});
     lijst.appendChild(nieuwItem);
     gevondenWoorden.push(hintWoord);
     score++;
     hintsGebruikt++;
     document.getElementById('score').innerText = "Score: " + score;
-    document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
+    document.getElementById('totaal').innerText = Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length};
     document.getElementById('resultaat').innerText = '';
     hintIndex++;
     updateLetterHighlights('');
@@ -376,13 +389,13 @@ function toonOplossing() {
   resterend.forEach(w => {
     const uitleg = woordenUitleg[w];
     const nieuwItem = document.createElement('li');
-    nieuwItem.innerText = `${w} (${uitleg})`;
+    nieuwItem.innerText = ${w} (${uitleg});
     lijst.appendChild(nieuwItem);
     gevondenWoorden.push(w);
     score++;
   });
   document.getElementById('score').innerText = "Score: " + score;
-  document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
+  document.getElementById('totaal').innerText = Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length};
   document.getElementById('resultaat').innerText = '';
   updateLetterHighlights('');
   toonJanPopup();
@@ -400,7 +413,7 @@ function resetSpel() {
   document.getElementById('inputwoord').value = '';
   document.getElementById('gevonden').innerHTML = '';
   document.getElementById('score').innerText = "Score: 0";
-  document.getElementById('totaal').innerText = `Woorden gevonden: 0 / ${Object.keys(woordenUitleg).length}`;
+  document.getElementById('totaal').innerText = Woorden gevonden: 0 / ${Object.keys(woordenUitleg).length};
   document.getElementById('timer').innerText = "Tijd: 0:00";
   document.getElementById('resultaat').innerText = '';
   updateLetterHighlights('');
@@ -422,7 +435,7 @@ function vuurwerkAnimatie() {
   const container = document.getElementById('vuurwerk');
   for (let i = 0; i < 20; i++) {
     const dot = document.createElement('div');
-    dot.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    dot.style.backgroundColor = hsl(${Math.random() * 360}, 100%, 50%);
     dot.style.top = Math.random() * window.innerHeight + 'px';
     dot.style.left = Math.random() * window.innerWidth + 'px';
     container.appendChild(dot);

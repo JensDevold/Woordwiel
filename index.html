@@ -7,7 +7,6 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      display: block;
       text-align: center;
     }
     #spel, #woordenlijst {
@@ -219,10 +218,12 @@ function toggleLetter(letter) {
   const waarde = input.value.toLowerCase();
   const lower = letter.toLowerCase();
 
-  if (waarde.includes(lower)) {
-    const index = waarde.lastIndexOf(lower);
+  // Verwijder de eerste instantie van de aangeklikte letter
+  let index = waarde.indexOf(lower);
+  if (index !== -1) {
     input.value = waarde.slice(0, index) + waarde.slice(index + 1);
   } else {
+    // Voeg toe als binnen limiet
     const telling = {};
     for (let l of waarde) {
       telling[l] = (telling[l] || 0) + 1;

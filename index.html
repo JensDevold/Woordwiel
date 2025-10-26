@@ -7,15 +7,15 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f4f8;
-      color: #333;
+      background-color: #1a1a1a;
+      color: #e0e0e0;
       margin: 0;
       padding: 20px;
     }
 
-    body.dark-mode {
-      background-color: #1a1a1a;
-      color: #e0e0e0;
+    body:not(.dark-mode) {
+      background-color: #f0f4f8;
+      color: #333;
     }
 
     #theme-toggle {
@@ -60,7 +60,7 @@
       position: absolute;
       width: 50px;
       height: 50px;
-      background-color: #f0f0f0;
+      background-color: #333;
       border-radius: 50%;
       font-size: 24px;
       font-weight: bold;
@@ -70,11 +70,21 @@
       transform: translate(-50%, -50%);
       transition: background-color 0.3s;
       cursor: pointer;
+      color: #eee;
+    }
+
+    body:not(.dark-mode) .letter {
+      background-color: #f0f0f0;
+      color: #333;
     }
 
     .center {
       top: 50%;
       left: 50%;
+      background-color: #3399cc;
+    }
+
+    body:not(.dark-mode) .center {
       background-color: #66ccff;
     }
 
@@ -83,28 +93,20 @@
       left: calc(50% + 90px * cos(var(--angle)));
     }
 
-    body.dark-mode .letter {
-      background-color: #333;
-      color: #eee;
-    }
-
-    body.dark-mode .center {
-      background-color: #3399cc;
-    }
-
     #controleerKnop {
       margin-top: 10px;
       font-size: 20px;
       padding: 8px 16px;
-      background-color: #66ccff;
+      background-color: #3399cc;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      color: white;
     }
 
-    body.dark-mode #controleerKnop {
-      background-color: #3399cc;
-      color: white;
+    body:not(.dark-mode) #controleerKnop {
+      background-color: #66ccff;
+      color: black;
     }
 
     input, button {
@@ -112,23 +114,26 @@
       font-size: 16px;
       margin: 5px;
       width: 80%;
-    }
-
-    body.dark-mode input, body.dark-mode button {
       background-color: #2a2a2a;
       color: #e0e0e0;
       border: 1px solid #555;
     }
 
+    body:not(.dark-mode) input, body:not(.dark-mode) button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+    }
+
     #resultaat {
       font-size: 18px;
       font-weight: bold;
-      color: #cc0000;
+      color: #ff6666;
       margin-bottom: 10px;
     }
 
-    body.dark-mode #resultaat {
-      color: #ff6666;
+    body:not(.dark-mode) #resultaat {
+      color: #cc0000;
     }
 
     #score, #timer, #totaal {
@@ -158,17 +163,17 @@
     }
 
     #janPopup div {
-      background: #ff69b4;
+      background: #cc4c99;
       margin: 0 auto;
       padding: 30px;
       border-radius: 20px;
       width: 500px;
-      box-shadow: 0 0 20px white;
+      box-shadow: 0 0 20px #999;
     }
 
-    body.dark-mode #janPopup div {
-      background: #cc4c99;
-      box-shadow: 0 0 20px #999;
+    body:not(.dark-mode) #janPopup div {
+      background: #ff69b4;
+      box-shadow: 0 0 20px white;
     }
 
     #vuurwerk {
@@ -193,15 +198,15 @@
     }
 
     .highlight {
-      background-color: #ffcc00 !important;
+      background-color: #d4a900 !important;
     }
 
-    body.dark-mode .highlight {
-      background-color: #d4a900 !important;
+    body:not(.dark-mode) .highlight {
+      background-color: #ffcc00 !important;
     }
   </style>
 </head>
-<body>
+<body class="dark-mode">
   <button id="theme-toggle" onclick="toggleTheme()">🌙 Donker / Licht</button>
 
   <div id="spel">
@@ -312,16 +317,15 @@ function renderLetters() {
 function toggleLetter(letter, id) {
   const lower = letter.toLowerCase();
   const max = letterLimieten[letter.toUpperCase()] || 0;
-  const huidigeAantal = klikGeschiedenis.filter(k => k.letter === lower).length;
 
-  if (huidigeAantal < max) {
-    klikGeschiedenis.push({ letter: lower, id });
+  const index = klikGeschiedenis.findIndex(k => k.letter === lower && k.id === id);
+
+  if (index !== -1) {
+    klikGeschiedenis.splice(index, 1);
   } else {
-    for (let i = klikGeschiedenis.length - 1; i >= 0; i--) {
-      if (klikGeschiedenis[i].letter === lower && klikGeschiedenis[i].id === id) {
-        klikGeschiedenis.splice(i, 1);
-        break;
-      }
+    const huidigeAantal = klikGeschiedenis.filter(k => k.letter === lower).length;
+    if (huidigeAantal < max) {
+      klikGeschiedenis.push({ letter: lower, id });
     }
   }
 

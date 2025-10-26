@@ -2,382 +2,418 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Fietslease Simulator UZ Leuven</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Woordwiel: Creatieve Vrijheid</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f4f8;
-      color: #333;
-      margin: 0;
-      padding: 20px;
-    }
-
-    body.dark-mode {
-      background-color: #1a1a1a;
-      color: #e0e0e0;
-    }
-
-    .header {
-      margin-bottom: 20px;
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      display: block;
       text-align: center;
-      position: relative;
     }
-
-    .header h1 {
-      font-size: 1.1em;
-      color: #0078D7;
-      margin: 0;
-    }
-    
-    body.dark-mode .header h1 {
-        color: #8cbbff;
-    }
-
-    #theme-toggle {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        font-size: 0.8em;
-        background: none;
-        border: 1px solid white;
-        border-radius: 5px;
-        cursor: pointer;
-        color: white;
-        padding: 5px 10px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        z-index: 1000;
-        /* Aangepast: vaste breedte om overlappen te voorkomen */
-        width: 110px; 
-        text-align: center;
-    }
-    
-    body:not(.dark-mode) #theme-toggle {
-        border: 1px solid #333;
-        color: #333;
-    }
-
-    .subtext {
-      font-size: 11px;
-      color: #888;
-      margin-top: 4px;
-    }
-    
-    body.dark-mode .subtext {
-        color: #a0a0a0;
-    }
-
-    .container {
-      display: flex;
-      gap: 40px;
-      max-width: 1200px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    
-    body.dark-mode .container {
-        background: #2b2b2b;
-        box-shadow: 0 0 10px rgba(255,255,255,0.1);
-    }
-
-    .left-panel, .right-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .left-panel {
-      gap: 5px;
-    }
-    
-    label {
-      margin-top: 8px;
-      font-weight: bold;
-      font-size: 13px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 5px;
-      margin-top: 2px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 13px;
-      background: #fdfdfd;
-      color: #333;
-    }
-    
-    body.dark-mode input, body.dark-mode select {
-        background: #3a3a3a;
-        color: #e0e0e0;
-        border: 1px solid #555;
-    }
-
-    .right-panel {
-      background-color: #e6f7ff;
-      padding: 20px;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    body.dark-mode .right-panel {
-        background-color: #3a3a3a;
-    }
-
-    .top-link {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 5px;
-    }
-
-    .button-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 4%;
-      margin-top: 10px;
-    }
-
-    button {
-      padding: 8px;
-      width: 48%;
-      background: #0078D7;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-    
-    body.dark-mode button {
-        background: #005fa3;
-    }
-
-    .link-button {
+    #spel, #woordenlijst {
       display: inline-block;
-      padding: 5px 10px;
-      background-color: #28a745;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
+      vertical-align: top;
+      width: 45%;
+      margin: 10px;
+    }
+    .circle-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 0 auto 30px auto;
+    }
+    .letter {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: #f0f0f0;
+      border-radius: 50%;
+      font-size: 24px;
       font-weight: bold;
-      font-size: 12px;
-      transition: background-color 0.3s ease;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.3s;
     }
-
-    .link-button:hover {
-      background-color: #218838;
+    .center {
+      top: 50%;
+      left: 50%;
+      background-color: #66ccff;
     }
-
-    .result {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 5px;
-      margin-top: 10px;
-      width: 100%;
-      font-size: 14px;
-      line-height: 1.2;
+    .circle-container .letter:not(.center) {
+      top: calc(50% + 90px * sin(var(--angle)));
+      left: calc(50% + 90px * cos(var(--angle)));
     }
-    
-    body.dark-mode .result {
-        background: #4a4a4a;
-        color: #e0e0e0;
-    }
-
-    .result strong {
-        font-size: 1.1em;
-    }
-    
-    .result br {
-        line-height: 0.1;
-    }
-
-    .result em {
-      font-size: 0.9em;
-      line-height: 1.2;
-    }
-
-    .disclaimer {
-      font-size: 0.7em;
-      color: #555;
-      margin-top: 10px;
-      background-color: #f9f9f9;
+    input, button {
       padding: 10px;
-      border-left: 4px solid #a3c2f2;
-      border-radius: 4px;
+      font-size: 16px;
+      margin: 5px;
+      width: 80%;
     }
-    
-    body.dark-mode .disclaimer {
-        background-color: #333333;
-        color: #b0b0b0;
-        border-left: 4px solid #5c85d6;
+    #resultaat {
+      font-size: 18px;
+      font-weight: bold;
+      color: #cc0000;
+      margin-bottom: 10px;
     }
-    
-    /* Media query voor mobiele schermen */
-    @media (max-width: 768px) {
-        body {
-            padding: 10px;
-        }
-
-        .container {
-            flex-direction: column;
-            gap: 20px;
-            padding: 15px;
-        }
-
-        .header h1 {
-            font-size: 1em;
-        }
-
-        #theme-toggle {
-            top: 10px;
-            right: 10px;
-        }
-        
-        .result {
-            font-size: 12px;
-        }
-        
-        .result strong {
-            font-size: 1em;
-        }
+    #score, #timer, #totaal {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    #janPopup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 9998;
+      text-align: center;
+      color: white;
+      padding-top: 100px;
+    }
+    #janPopup div {
+      background: #ff69b4;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 20px;
+      width: 500px;
+      box-shadow: 0 0 20px white;
+    }
+    #vuurwerk {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #vuurwerk div {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      position: absolute;
+      animation: explode 3s ease-out forwards;
+    }
+    @keyframes explode {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(3); opacity: 0; }
+    }
+    .highlight {
+      background-color: #ffcc00 !important;
     }
   </style>
 </head>
-<body onload="calculate();">
+<body>
 
-  <div class="header">
-    <h1>🚲 Fietslease Simulator Eindejaarspremie (EJP) UZ Leuven</h1>
-    <div class="subtext">
-      Deze tool biedt een indicatieve berekening van het resterende netto bedrag van uw jaarlijkse eindejaarspremie (EJP)
-    </div>
-  </div>
-  <button id="theme-toggle">🌙 Dark mode</button>
+  <div id="spel">
+    <h1>🎨 Woordwiel: Creatieve Vrijheid</h1>
+    <p>Gebruik de letters en zorg dat elk woord de <strong>middelste letter P</strong> bevat. Minstens 4 letters!</p>
 
-  <div class="container">
-    <div class="left-panel">
-      <label>Werkpercentage (%):</label>
-      <input type="text" id="workPct" value="100">
-
-      <label>Bruto eindejaarspremie (100%):<span class="subtext"> (zie loonfiche "oktober (2)")</span></label>
-      <input type="text" id="bonus" value="3250">
-
-      <label>Fietsprijs: <span class="subtext">(Incl BTW) (De basisprijs van de fiets met prestatie-verbeterende aanpassingen, zoals een betere accu of geavanceerdere remmen + eventuele administratiekosten en BEBAT)</span></label>
-      <input type="text" id="bikePrice" value="7500">
-
-      <label>Accessoiresprijs: <span class="subtext">(Incl BTW) (Extra onderdelen voor comfort, gemak of veiligheid, zoals een fietstas, helm, slot, spatlap, verlichting of extra service)</span></label>
-      <input type="text" id="accessoryPrice" value="350">
-
-      <label>Leasetermijn:</label>
-      <select id="leaseTerm">
-        <option value="36">36 maanden</option>
-        <option value="48">48 maanden</option>
-      </select>
-
-      <div class="button-row">
-        <button onclick="calculate()">Bereken</button>
-        <button onclick="exportResult()">📤 Exporteren</button>
-      </div>
+    <div class="circle-container" id="woordwiel">
+      <div class="letter center" data-letter="P">P</div>
     </div>
 
-    <div class="right-panel">
-      <div class="top-link">
-          <a href="https://www.bit.ly/UZLeuven-Simulatietool" target="_blank" class="link-button">UZLeuven-Simulatietool berekening maximaal leasebudget</a>
-      </div>
-      <div class="result" id="result"></div>
-      <div class="disclaimer">
-        <strong>Disclaimer:</strong><br>
-        Deze simulatietool is uitsluitend bedoeld als informatief hulpmiddel en werd niet ontwikkeld door UZ Leuven. De maker van deze tool aanvaardt geen enkele aansprakelijkheid voor de juistheid, volledigheid of gevolgen van de berekeningen. Raadpleeg steeds de officiële communicatie van UZ Leuven voor bindende en actuele informatie.
-      </div>
-    </div>
+    <div id="resultaat"></div>
+    <input type="text" id="inputwoord" placeholder="Typ een woord..." onkeydown="handleKey(event)" oninput="startTimer(); filterInput()" />
+    <button onclick="controleerWoord()">Controleer</button>
+    <button onclick="togglePause()">⏸️ Pauzeer / Hervat</button>
+    <button onclick="rotateLetters()">🔄 Wissel letters</button>
+    <button onclick="toonHint()">💡 Hint</button>
+    <button onclick="toonOplossing()">🧩 Toon oplossing</button>
+    <button onclick="resetSpel()">🔄 Reset spel</button>
+
+    <div id="score">Score: 0</div>
+    <div id="totaal">Woorden gevonden: 0 / 25</div>
+    <div id="timer">Tijd: 0:00</div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const toggleButton = document.getElementById('theme-toggle');
-      const body = document.body;
+  <div id="woordenlijst">
+    <h3>🧠 Gevonden woorden</h3>
+    <ul id="gevonden"></ul>
+  </div>
 
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'light-mode') {
-        body.classList.remove('dark-mode');
-      } else {
-        body.classList.add('dark-mode');
+  <div id="janPopup">
+    <div>
+      <h2>🎉 Bedankt Jan!</h2>
+      <p>Voor al je jaren bij ons, je vriendschap, je kennis, en je legendarische dad jokes.<br>We gaan je missen!</p>
+      <button onclick="sluitJanPopup()">Sluiten</button>
+    </div>
+  </div>
+  <div id="vuurwerk"></div>
+<script>
+const centerLetter = 'P';
+let outerLetters = ['E', 'N', 'S', 'I', 'O', 'E', 'N'];
+const letterLimieten = { P: 1, E: 2, N: 2, S: 1, I: 1, O: 1 };
+
+const woordenUitleg = {
+  'pensioen': 'periode waarin je stopt met werken',
+  'pion': 'speelstuk in een spel',
+  'spin': 'dier met acht poten',
+  'open': 'niet gesloten',
+  'poen': 'informeel voor geld',
+  'poep': 'informeel voor ontlasting',
+  'pies': 'informeel voor urine',
+  'pins': 'spelden of digitale codes',
+  'pone': 'stellen of beweren',
+  'peen': 'wortelgroente',
+  'spon': 'vezelachtig materiaal',
+  'peps': 'energie of pit',
+  'snip': 'vogel met lange snavel',
+  'penis': 'mannelijk geslachtsorgaan',
+  'pens': 'buik of ingewanden',
+  'pien': 'verkorting van meisjesnaam',
+  'nies': 'reflex van neus',
+  'seep': 'dialect voor zeep',
+  'seepie': 'verkleinwoord van seep',
+  'popen': 'meervoud van pop (archaïsch)',
+  'poens': 'meervoudsvorm van poen',
+  'pinon': 'soort dennenboom (Engels leenwoord)',
+  'peon': 'lage arbeider (Engels leenwoord)',
+  'ponee': 'variant op pone',
+  'neep': 'dialect voor raap'
+};
+
+let gevondenWoorden = [];
+let score = 0;
+let seconden = 0;
+let timerStarted = false;
+let timerPaused = false;
+let timerInterval;
+let hintIndex = 0;
+let hintsGebruikt = 0;
+let vuurwerkInterval;
+
+function renderLetters() {
+  const container = document.getElementById('woordwiel');
+  container.innerHTML = '<div class="letter center" data-letter="P">P</div>';
+  const total = outerLetters.length;
+  outerLetters.forEach((letter, i) => {
+    const angle = (360 / total) * i;
+    const div = document.createElement('div');
+    div.className = 'letter';
+    div.setAttribute('data-letter', letter);
+    div.style.setProperty('--angle', angle + 'deg');
+    div.textContent = letter;
+    container.appendChild(div);
+  });
+}
+
+function startTimer() {
+  if (!timerStarted) {
+    timerStarted = true;
+    timerInterval = setInterval(() => {
+      if (!timerPaused) {
+        seconden++;
+        const min = Math.floor(seconden / 60);
+        const sec = seconden % 60;
+        document.getElementById('timer').innerText = `Tijd: ${min}:${sec.toString().padStart(2, '0')}`;
       }
+    }, 1000);
+  }
+}
 
-      function updateToggleButton() {
-        if (body.classList.contains('dark-mode')) {
-          toggleButton.innerHTML = '🌙 Dark mode';
-        } else {
-          toggleButton.innerHTML = '☀️ Light mode';
-        }
+function togglePause() {
+  timerPaused = !timerPaused;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter') {
+    controleerWoord();
+    document.getElementById('inputwoord').value = '';
+    updateLetterHighlights('');
+  }
+}
+
+function filterInput() {
+  const input = document.getElementById('inputwoord');
+  let waarde = input.value.toLowerCase().replace(/[^a-z]/g, '');
+  let telling = {};
+  let gefilterd = '';
+
+  for (let letter of waarde) {
+    const upper = letter.toUpperCase();
+    if (!letterLimieten[upper]) continue;
+    telling[upper] = (telling[upper] || 0) + 1;
+    if (telling[upper] <= letterLimieten[upper]) {
+      gefilterd += letter;
+    }
+  }
+
+  input.value = gefilterd;
+  updateLetterHighlights(gefilterd);
+}
+
+function updateLetterHighlights(gefilterd) {
+  const telling = {};
+  for (let l of gefilterd) {
+    const upper = l.toUpperCase();
+    telling[upper] = (telling[upper] || 0) + 1;
+  }
+
+  const letters = document.querySelectorAll('.letter');
+  const gebruikt = {};
+
+  letters.forEach(el => {
+    const l = el.getAttribute('data-letter').toUpperCase();
+    const max = letterLimieten[l] || 0;
+    gebruikt[l] = (gebruikt[l] || 0);
+
+    if ((telling[l] || 0) > gebruikt[l] && gebruikt[l] < max) {
+      el.classList.add('highlight');
+      gebruikt[l]++;
+    } else {
+      el.classList.remove('highlight');
+    }
+  });
+}
+function controleerWoord() {
+  const invoer = document.getElementById('inputwoord').value.toLowerCase();
+  const resultaat = document.getElementById('resultaat');
+  const lijst = document.getElementById('gevonden');
+
+  if (invoer.length < 4) {
+    resultaat.innerText = "❌ Minstens 4 letters!";
+    return;
+  }
+
+  if (!invoer.includes(centerLetter.toLowerCase())) {
+    resultaat.innerText = "❌ Moet de letter 'P' bevatten!";
+    return;
+  }
+
+  const telling = {};
+  for (let letter of invoer) {
+    const upper = letter.toUpperCase();
+    if (!letterLimieten[upper]) {
+      resultaat.innerText = "❌ Ongeldige letter!";
+      return;
+    }
+    telling[upper] = (telling[upper] || 0) + 1;
+    if (telling[upper] > letterLimieten[upper]) {
+      resultaat.innerText = `❌ Te veel van de letter '${upper}' gebruikt!`;
+      return;
+    }
+  }
+
+  if (woordenUitleg[invoer]) {
+    if (!gevondenWoorden.includes(invoer)) {
+      gevondenWoorden.push(invoer);
+      score++;
+      document.getElementById('score').innerText = "Score: " + score;
+      document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
+      const uitleg = woordenUitleg[invoer];
+      const nieuwItem = document.createElement('li');
+      nieuwItem.innerText = `${invoer} (${uitleg})`;
+      lijst.appendChild(nieuwItem);
+      updateLetterHighlights('');
+      document.getElementById('resultaat').innerText = '';
+      if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
+        toonJanPopup();
       }
-      
-      updateToggleButton();
-
-      toggleButton.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        if (body.classList.contains('dark-mode')) {
-          localStorage.setItem('theme', 'dark-mode');
-        } else {
-          localStorage.setItem('theme', 'light-mode');
-        }
-        updateToggleButton();
-      });
-    });
-
-    function parseDecimal(value) {
-      return parseFloat(value.replace(',', '.'));
+    } else {
+      resultaat.innerText = "ℹ️ Dat woord heb je al gevonden.";
     }
+  } else {
+    resultaat.innerText = "❌ Geen geldig woord in deze puzzel.";
+  }
+}
 
-    function calculate() {
-      const workPct = parseDecimal(document.getElementById('workPct').value) / 100;
-      const bonus100 = parseDecimal(document.getElementById('bonus').value);
-      const bikePrice = parseDecimal(document.getElementById('bikePrice').value);
-      const accessoryPrice = parseDecimal(document.getElementById('accessoryPrice').value);
-      const leaseTerm = parseInt(document.getElementById('leaseTerm').value);
+function rotateLetters() {
+  outerLetters = outerLetters.sort(() => Math.random() - 0.5);
+  renderLetters();
+}
 
-      const totalPrice = bikePrice + accessoryPrice;
-      const monthlyLease = totalPrice / leaseTerm;
-      const monthlyLoonruil = monthlyLease * 0.75;
-      const yearlyLoonruil = monthlyLoonruil * 12;
-
-      const brutoPremie = bonus100 * workPct;
-      const brutoOverschot = brutoPremie - yearlyLoonruil;
-      const nettoOverschot = brutoOverschot * 0.4589;
-      const totaalNettoOverschot = nettoOverschot * (leaseTerm / 12);
-
-      const restwaardeFiets = bikePrice * 0.1501;
-      const restwaardeAccessoires = accessoryPrice * 0.1501;
-
-      let resultText = `<strong>Resultaat:</strong><br><br>`;
-      resultText += `
-        📆 <strong>Maandelijkse leasekost:</strong> €${monthlyLease.toFixed(2)}<br>
-        💰 <strong>Bruto loonruil per maand:</strong> €${monthlyLoonruil.toFixed(2)}<br>
-        💰 <strong>Bruto loonruil per jaar:</strong> €${yearlyLoonruil.toFixed(2)}<br>
-        📊 <strong>Netto overschot EJP per jaar:</strong> €${nettoOverschot.toFixed(2)}<br>
-        📊 <strong>Totaal netto overschot EJP na ${leaseTerm} maanden:</strong> €${totaalNettoOverschot.toFixed(2)}<br>
-        🔚 <strong>Overnameprijs fiets na lease:</strong> €${restwaardeFiets.toFixed(2)}<br>
-        🔚 <strong>Overnameprijs accessoires na lease:</strong> €${restwaardeAccessoires.toFixed(2)}<br><br>
-        📌 <em>De maandelijkse leasekost wordt jaarlijks verrekend via uw eindejaarspremie. Er gaat dus maandelijks niets van uw nettoloon.</em>
-      `;
-      document.getElementById('result').innerHTML = resultText;
+function toonHint() {
+  const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
+  if (resterend.length > 0) {
+    const hintWoord = resterend[hintIndex % resterend.length];
+    const uitleg = woordenUitleg[hintWoord];
+    const lijst = document.getElementById('gevonden');
+    const nieuwItem = document.createElement('li');
+    nieuwItem.innerText = `${hintWoord} (${uitleg})`;
+    lijst.appendChild(nieuwItem);
+    gevondenWoorden.push(hintWoord);
+    score++;
+    hintsGebruikt++;
+    document.getElementById('score').innerText = "Score: " + score;
+    document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
+    document.getElementById('resultaat').innerText = '';
+    hintIndex++;
+    updateLetterHighlights('');
+    if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
+      toonJanPopup();
     }
+  }
+}
 
-    function exportResult() {
-      const result = document.getElementById('result').innerText;
-      const blob = new Blob([result], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'fietslease_simulatie.txt';
-      link.click();
-    }
-  </script>
+function toonOplossing() {
+  const lijst = document.getElementById('gevonden');
+  const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
+  resterend.forEach(w => {
+    const uitleg = woordenUitleg[w];
+    const nieuwItem = document.createElement('li');
+    nieuwItem.innerText = `${w} (${uitleg})`;
+    lijst.appendChild(nieuwItem);
+    gevondenWoorden.push(w);
+    score++;
+  });
+  document.getElementById('score').innerText = "Score: " + score;
+  document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
+  document.getElementById('resultaat').innerText = '';
+  updateLetterHighlights('');
+  toonJanPopup();
+}
+
+function resetSpel() {
+  gevondenWoorden = [];
+  score = 0;
+  seconden = 0;
+  timerStarted = false;
+  timerPaused = false;
+  hintIndex = 0;
+  hintsGebruikt = 0;
+  clearInterval(timerInterval);
+  document.getElementById('inputwoord').value = '';
+  document.getElementById('gevonden').innerHTML = '';
+  document.getElementById('score').innerText = "Score: 0";
+  document.getElementById('totaal').innerText = `Woorden gevonden: 0 / ${Object.keys(woordenUitleg).length}`;
+  document.getElementById('timer').innerText = "Tijd: 0:00";
+  document.getElementById('resultaat').innerText = '';
+  updateLetterHighlights('');
+  renderLetters();
+}
+
+function toonJanPopup() {
+  document.getElementById('janPopup').style.display = 'block';
+  vuurwerkInterval = setInterval(vuurwerkAnimatie, 1000);
+}
+
+function sluitJanPopup() {
+  document.getElementById('janPopup').style.display = 'none';
+  clearInterval(vuurwerkInterval);
+  document.getElementById('vuurwerk').innerHTML = '';
+}
+
+function vuurwerkAnimatie() {
+  const container = document.getElementById('vuurwerk');
+  for (let i = 0; i < 20; i++) {
+    const dot = document.createElement('div');
+    dot.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    dot.style.top = Math.random() * window.innerHeight + 'px';
+    dot.style.left = Math.random() * window.innerWidth + 'px';
+    container.appendChild(dot);
+    setTimeout(() => dot.remove(), 3000);
+  }
+}
+
+renderLetters();
+</script>
 </body>
 </html>

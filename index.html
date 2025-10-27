@@ -181,7 +181,7 @@
     <button onclick="rotateLetters()">🔄 Wissel letters</button>
     <button onclick="toonHint()">💡 Hint</button>
     <button onclick="toonOplossing()">🧩 Toon oplossing</button>
-    <button onclick="resetSpel()">🔄 Reset spel</button>
+    <button onclick="vraagResetBevestiging()">🔄 Reset spel</button>
 
     <div id="resultaat"></div>
     <div id="score">Score: 0</div>
@@ -372,17 +372,17 @@ function renderLetters() {
     }
 
     function toonOplossing() {
-      if (bevestigingOplossingStap === 0) {
-        bevestigingOplossingStap = 1;
-        toonBevestiging("Weet je zeker dat je de oplossing wilt tonen?", () => {
-          bevestigingOplossingStap = 2;
-        }, () => bevestigingOplossingStap = 0);
-      } else if (bevestigingOplossingStap === 2) {
+      toonBevestiging("Weet je zeker dat je de oplossing wilt tonen?", () => {
         toonBevestiging("Echt zeker? Dit toont alle antwoorden!", () => {
-          bevestigingOplossingStap = 0;
           voerOplossingUit();
-        }, () => bevestigingOplossingStap = 0);
-      }
+        }, () => {});
+      }, () => {});
+    }
+
+    function vraagResetBevestiging() {
+      toonBevestiging("Weet je zeker dat je het spel wilt resetten?", () => {
+        resetSpel();
+      }, () => {});
     }
 
     function voerHintUit() {

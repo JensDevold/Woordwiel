@@ -230,6 +230,140 @@
     <div id="totaal">Woorden gevonden: 0 / 20</div>
     <div id="timer">Tijd: 0:00</div>
   </div>
+<div id="woordenlijst">
+    <h3>🧠 Gevonden woorden</h3>
+    <ul id="gevonden"></ul>
+  </div>
+
+  <div id="janPopup">
+    <div>
+      <h2>🎉 Bedankt Jan!</h2>
+      <p>Voor al je jaren bij ons, je vriendschap, je kennis, en je legendarische dad jokes.<br>We gaan je missen!</p>
+      <button onclick="sluitJanPopup()">Sluiten</button>
+    </div>
+  </div>
+  <div id="vuurwerk"></div>
+
+<script>
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+}
+
+const centerLetter = 'E';
+let outerLetters = ['P', 'N', 'S', 'I', 'O', 'E', 'N'];
+const letterLimieten = { P: 1, E: 2, N: 2, S: 1, I: 1, O: 1 };
+
+const woordenUitleg = {
+  'pensioen': 'periode waarin je stopt met werken',
+  'pens': 'buik of ingewanden',
+  'penis': 'mannelijk geslachtsorgaan',
+  'open': 'niet gesloten',
+  'poen': 'informeel voor geld',
+  'pone': 'stellen of beweren',
+  'peen': 'wortelgroente',
+  'neep': 'dialect voor raap',
+  'neon': 'edelgas, vaak gebruikt in verlichting',
+  'nies': 'reflex van de neus',
+  'peil': 'hoogte of niveau van iets',
+  'sein': 'signaal of teken',
+  'siep': 'regionaal woord voor zeef of filter',
+  'peis': 'Vlaams woord voor rust of vrede',
+  'ponee': 'variant op pone',
+  'neps': 'meervoud van nep, iets dat niet echt is',
+  'openen': 'iets toegankelijk maken of ontgrendelen',
+  'pien': 'verkorte meisjesnaam, ook als zelfstandig woord in dialect',
+  'seep': 'dialect voor zeep',
+  'sien': 'oud-Nederlands voor zien of waarnemen'
+};
+
+let gevondenWoorden = [];
+let score = 0;
+let seconden = 0;
+let timerStarted = false;
+let timerPaused = false;
+let timerInterval;
+let hintIndex = 0;
+let hintsGebruikt = 0;
+let vuurwerkInterval;
+let klikGeschiedenis = [];
+
+function renderLetters() {
+  const container = document.getElementById('woordwiel');
+  container.innerHTML = '';
+
+  const centerDiv = document.createElement('div');
+  centerDiv.className = 'letter center';
+  centerDiv.setAttribute('data-letter', centerLetter);
+  centerDiv.setAttribute('data-id', 'center');
+  centerDiv.textContent = centerLetter;
+  centerDiv.onclick = () => toggleLetter(centerLetter, 'center');
+  container.appendChild(centerDiv);
+
+  const total = outerLetters.length;
+  outerLetters.forEach((letter, i) => {
+    const angle = (360 / total) * i;
+    const div = document.createElement('div');
+    div.className = 'letter';
+    div.setAttribute('data-letter', letter);
+    div.setAttribute('data-id', `outer-${i}`);
+    div.style.setProperty('--angle', angle + 'deg');
+    div.textContent = letter;
+    div.onclick = () => toggleLetter(letter, `outer-${i}`);
+    container.appendChild(div);
+  });
+}
+
+function toggleLetter(letter, id) {
+  const lower = letter.toLowerCase();
+  const max = letterLimieten[letter.toUpperCase()] || 0;
+
+  const index = klikGeschiedenis.findIndex(k => k.letter === lower && k.id === id);
+
+  if (index !== -1) {
+    klikGeschiedenis.splice(index, 1);
+  } else {
+    const huidigeAantal = klikGeschiedenis.filter(k => k.letter === lower).length;
+    if (huidigeAantal < max) {
+      klikGeschiedenis.push({ letter: lower, id });
+    }
+  }
+
+  document.getElementById('inputwoord').value = klikGeschiedenis.map(k => k.letter).join('');
+  updateLetterHighlights();
+  startTimer();
+}
+
+function updateLetterHighlights() {
+  const letters = document.querySelectorAll('.letter');
+  letters.forEach(el => el.classList.remove('highlight'));
+
+  klikGeschiedenis.forEach(k => {
+    if (k.id) {
+      const el = document.querySelector(`.letter[data-id="${k.id}"]`);
+      if (el) el.classList.add('highlight');
+    }
+  });
+}
+
+function filterInput() {
+  const input = document.getElementById('inputwoord');
+  let waarde = input.value.toLowerCase().replace(/[^a-z]/g, '');
+  let telling = {};
+  klikGeschiedenis = [];
+
+  for (let letter of waarde) {
+    const upper = letter.toUpperCase();
+    if (!letterLimieten[upper]) continue;
+    telling[upper] = (telling[upper] || 0) + 1;
+    if (telling[upper] <= letterLimieten[upper]) {
+      klikGeschiedenis.push({ letter, id: null });
+    }
+  }
+
+  input.value = klikGeschiedenis.map(k => k.letter).join('');
+  updateLetterHighlights();
+}
+
 function rotateLetters() {
   outerLetters = outerLetters.sort(() => Math.random() - 0.5);
   klikGeschiedenis = [];
@@ -237,6 +371,7 @@ function rotateLetters() {
   updateLetterHighlights();
   renderLetters();
 }
+<script>
 let bevestigingHint = false;
 let bevestigingOplossing = 0;
 
@@ -356,33 +491,6 @@ function voerOplossingUit() {
   toonJanPopup();
 }
 
-function startTimer() {
-  if (!timerStarted) {
-    timerStarted = true;
-    timerInterval = setInterval(() => {
-      if (!timerPaused) {
-        seconden++;
-        const min = Math.floor(seconden / 60);
-        const sec = seconden % 60;
-        document.getElementById('timer').innerText = `Tijd: ${min}:${sec.toString().padStart(2, '0')}`;
-      }
-    }, 1000);
-  }
-}
-
-function togglePause() {
-  timerPaused = !timerPaused;
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter') {
-    controleerWoord();
-    document.getElementById('inputwoord').value = '';
-    klikGeschiedenis = [];
-    updateLetterHighlights();
-  }
-}
-
 function controleerWoord() {
   const invoer = klikGeschiedenis.map(k => k.letter).join('');
   const resultaat = document.getElementById('resultaat');
@@ -434,6 +542,32 @@ function controleerWoord() {
     }
   } else {
     resultaat.innerText = "❌ Geen geldig woord in deze puzzel.";
+  }
+}
+function startTimer() {
+  if (!timerStarted) {
+    timerStarted = true;
+    timerInterval = setInterval(() => {
+      if (!timerPaused) {
+        seconden++;
+        const min = Math.floor(seconden / 60);
+        const sec = seconden % 60;
+        document.getElementById('timer').innerText = `Tijd: ${min}:${sec.toString().padStart(2, '0')}`;
+      }
+    }, 1000);
+  }
+}
+
+function togglePause() {
+  timerPaused = !timerPaused;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter') {
+    controleerWoord();
+    document.getElementById('inputwoord').value = '';
+    klikGeschiedenis = [];
+    updateLetterHighlights();
   }
 }
 

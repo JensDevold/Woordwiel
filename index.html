@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <title>Woordwiel: Creatieve Vrijheid</title>
+  <title>Het Wiel van de Lorre</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -18,15 +18,15 @@
     }
     #theme-toggle {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 0.8em;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
       background: none;
       border: 1px solid white;
       border-radius: 5px;
       cursor: pointer;
       color: white;
-      padding: 5px 10px;
+      padding: 4px 8px;
       z-index: 1000;
     }
     body:not(.dark-mode) #theme-toggle {
@@ -124,7 +124,7 @@
       background-color: #444;
       height: 20px;
       border-radius: 10px;
-      margin-bottom: 10px;
+      margin: 10px 0;
       overflow: hidden;
     }
     #voortgangBalk {
@@ -190,10 +190,10 @@
   </style>
 </head>
 <body class="dark-mode">
-  <button id="theme-toggle" onclick="toggleTheme()">🌙 Donker / Licht</button>
+  <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
 
   <div id="spel">
-    <h1>🎨 Woordwiel: Creatieve Vrijheid</h1>
+    <h1>🎨 Het Wiel van de Lorre</h1>
     <p>Gebruik de letters en zorg dat elk woord de <strong>middelste letter E</strong> bevat. Minstens 4 letters!</p>
     <div class="circle-container" id="woordwiel"></div>
     <div id="resultaat"></div>
@@ -208,10 +208,10 @@
   </div>
 
   <div id="woordenlijst">
+    <h3>🧠 Gevonden woorden</h3>
     <div id="voortgangContainer">
       <div id="voortgangBalk"></div>
     </div>
-    <h3>🧠 Gevonden woorden</h3>
     <div id="timer">Tijd: 0:00</div>
     <div id="totaal"></div>
     <ul id="gevonden"></ul>

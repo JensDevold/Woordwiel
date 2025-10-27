@@ -100,11 +100,12 @@
     #resultaat {
       font-size: 18px;
       font-weight: bold;
-      color: #ff6666;
-      margin-bottom: 10px;
+      color: #ffcc66;
+      margin: 10px auto;
+      text-align: center;
     }
     body:not(.dark-mode) #resultaat {
-      color: #cc0000;
+      color: #cc8800;
     }
     #woordenlijst #timer,
     #woordenlijst #totaal {
@@ -175,6 +176,7 @@
     <h1>🎨 Woordwiel: Creatieve Vrijheid</h1>
     <p>Gebruik de letters en zorg dat elk woord de <strong>middelste letter E</strong> bevat. Minstens 4 letters!</p>
     <div class="circle-container" id="woordwiel"></div>
+    <div id="resultaat"></div>
 
     <input type="text" id="inputwoord" placeholder="Typ een woord..." onkeydown="handleKey(event)" oninput="startTimer(); filterInput()" />
     <button onclick="controleerWoord()">Controleer</button>
@@ -183,8 +185,6 @@
     <button onclick="toonHint()">💡 Hint</button>
     <button onclick="toonOplossing()">🧩 Toon oplossing</button>
     <button onclick="vraagResetBevestiging()">🔄 Reset spel</button>
-
-    <div id="resultaat"></div>
   </div>
 
   <div id="woordenlijst">
@@ -451,7 +451,7 @@
           lijst.appendChild(nieuwItem);
 
           const lengte = invoer.length;
-          if (lengte >= 5 && lengte <= 7) {
+          if (lengte >= 5 && lengte <= 8) {
             resultaat.innerText = `✅ ${lengte}-letterwoord gevonden!`;
           } else {
             resultaat.innerText = '';

@@ -29,12 +29,7 @@
       cursor: pointer;
       color: white;
       padding: 5px 10px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
       z-index: 1000;
-      width: 110px;
-      text-align: center;
     }
 
     body:not(.dark-mode) #theme-toggle {
@@ -93,20 +88,12 @@
       left: calc(50% + 90px * cos(var(--angle)));
     }
 
-    #controleerKnop {
-      margin-top: 10px;
-      font-size: 20px;
-      padding: 8px 16px;
-      background-color: #3399cc;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: white;
+    .highlight {
+      background-color: #d4a900 !important;
     }
 
-    body:not(.dark-mode) #controleerKnop {
-      background-color: #66ccff;
-      color: black;
+    body:not(.dark-mode) .highlight {
+      background-color: #ffcc00 !important;
     }
 
     input, button {
@@ -171,9 +158,220 @@
       box-shadow: 0 0 20px #999;
     }
 
-    body:not(.dark-mode) #janPopup div {
-      background: #ff69b4;
-      box-shadow: 0 0 20px white;
+    #vuurwerk {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    #vuurwerk div {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      position: absolute;
+      animation: explode 3s ease-out forwards;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(3); opacity: 0; }
+    }
+
+    #bevestigingBox {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #444;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 10000;
+      box-shadow: 0 0 10px black;
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <button id="theme-toggle" onclick="toggleTheme()">🌙 Donker / Licht</button>
+
+  <div id="spel">
+    <h1>🎨 Woordwiel: Creatieve Vrijheid</h1>
+    <p>Gebruik de letters en zorg dat elk woord de <strong>middelste letter E</strong> bevat. Minstens 4 letters!</p>
+
+    <div class="circle-container" id="woordwiel"></div>
+
+    <input type="text" id="inputwoord" placeholder="Typ een woord..." onkeydown="handleKey(event)" oninput="startTimer(); filterInput()" />
+    <button onclick="controleerWoord()">Controleer</button>
+    <button onclick="togglePause()">⏸️ Pauzeer / Hervat</button>
+    <button onclick="rotateLetters()">🔄 Wissel letters</button>
+    <button onclick="toonHint()">💡 Hint</button>
+    <button onclick="toonOplossing()">🧩 Toon oplossing</button>
+    <button onclick="resetSpel()">🔄 Reset spel</button>
+
+    <div id="resultaat"></div>
+    <div id="score">Score: 0</div>
+    <div id="totaal">Woorden gevonden: 0 / 20</div>
+    <div id="timer">Tijd: 0:00</div>
+  </div>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Woordwiel: Creatieve Vrijheid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    body:not(.dark-mode) {
+      background-color: #f0f4f8;
+      color: #333;
+    }
+
+    #theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 0.8em;
+      background: none;
+      border: 1px solid white;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+      padding: 5px 10px;
+      z-index: 1000;
+    }
+
+    body:not(.dark-mode) #theme-toggle {
+      border: 1px solid #333;
+      color: #333;
+    }
+
+    #spel, #woordenlijst {
+      display: inline-block;
+      vertical-align: top;
+      width: 45%;
+      margin: 10px;
+    }
+
+    .circle-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 0 auto 10px auto;
+    }
+
+    .letter {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: #333;
+      border-radius: 50%;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.3s;
+      cursor: pointer;
+      color: #eee;
+    }
+
+    body:not(.dark-mode) .letter {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .center {
+      top: 50%;
+      left: 50%;
+      background-color: #3399cc;
+    }
+
+    body:not(.dark-mode) .center {
+      background-color: #66ccff;
+    }
+
+    .circle-container .letter:not(.center) {
+      top: calc(50% + 90px * sin(var(--angle)));
+      left: calc(50% + 90px * cos(var(--angle)));
+    }
+
+    .highlight {
+      background-color: #d4a900 !important;
+    }
+
+    body:not(.dark-mode) .highlight {
+      background-color: #ffcc00 !important;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+      width: 80%;
+      background-color: #2a2a2a;
+      color: #e0e0e0;
+      border: 1px solid #555;
+    }
+
+    body:not(.dark-mode) input, body:not(.dark-mode) button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+    }
+
+    #resultaat {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff6666;
+      margin-bottom: 10px;
+    }
+
+    body:not(.dark-mode) #resultaat {
+      color: #cc0000;
+    }
+
+    #score, #timer, #totaal {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    #janPopup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 9998;
+      text-align: center;
+      color: white;
+      padding-top: 100px;
+    }
+
+    #janPopup div {
+      background: #cc4c99;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 20px;
+      width: 500px;
+      box-shadow: 0 0 20px #999;
     }
 
     #vuurwerk {
@@ -197,12 +395,16 @@
       100% { transform: scale(3); opacity: 0; }
     }
 
-    .highlight {
-      background-color: #d4a900 !important;
-    }
-
-    body:not(.dark-mode) .highlight {
-      background-color: #ffcc00 !important;
+    #bevestigingBox {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #444;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 10000;
+      box-shadow: 0 0 10px black;
     }
   </style>
 </head>
@@ -215,9 +417,6 @@
 
     <div class="circle-container" id="woordwiel"></div>
 
-    <button id="controleerKnop" onclick="controleerWoord()">➡️</button>
-
-    <div id="resultaat"></div>
     <input type="text" id="inputwoord" placeholder="Typ een woord..." onkeydown="handleKey(event)" oninput="startTimer(); filterInput()" />
     <button onclick="controleerWoord()">Controleer</button>
     <button onclick="togglePause()">⏸️ Pauzeer / Hervat</button>
@@ -226,152 +425,11 @@
     <button onclick="toonOplossing()">🧩 Toon oplossing</button>
     <button onclick="resetSpel()">🔄 Reset spel</button>
 
+    <div id="resultaat"></div>
     <div id="score">Score: 0</div>
     <div id="totaal">Woorden gevonden: 0 / 20</div>
     <div id="timer">Tijd: 0:00</div>
   </div>
-<div id="woordenlijst">
-    <h3>🧠 Gevonden woorden</h3>
-    <ul id="gevonden"></ul>
-  </div>
-
-  <div id="janPopup">
-    <div>
-      <h2>🎉 Bedankt Jan!</h2>
-      <p>Voor al je jaren bij ons, je vriendschap, je kennis, en je legendarische dad jokes.<br>We gaan je missen!</p>
-      <button onclick="sluitJanPopup()">Sluiten</button>
-    </div>
-  </div>
-  <div id="vuurwerk"></div>
-
-<script>
-function toggleTheme() {
-  document.body.classList.toggle('dark-mode');
-}
-
-const centerLetter = 'E';
-let outerLetters = ['P', 'N', 'S', 'I', 'O', 'E', 'N'];
-const letterLimieten = { P: 1, E: 2, N: 2, S: 1, I: 1, O: 1 };
-
-const woordenUitleg = {
-  'pensioen': 'periode waarin je stopt met werken',
-  'pens': 'buik of ingewanden',
-  'penis': 'mannelijk geslachtsorgaan',
-  'open': 'niet gesloten',
-  'poen': 'informeel voor geld',
-  'pone': 'stellen of beweren',
-  'peen': 'wortelgroente',
-  'neep': 'dialect voor raap',
-  'neon': 'edelgas, vaak gebruikt in verlichting',
-  'nies': 'reflex van de neus',
-  'peil': 'hoogte of niveau van iets',
-  'sein': 'signaal of teken',
-  'siep': 'regionaal woord voor zeef of filter',
-  'peis': 'Vlaams woord voor rust of vrede',
-  'ponee': 'variant op pone',
-  'neps': 'meervoud van nep, iets dat niet echt is',
-  'openen': 'iets toegankelijk maken of ontgrendelen',
-  'pien': 'verkorte meisjesnaam, ook als zelfstandig woord in dialect',
-  'seep': 'dialect voor zeep',
-  'sien': 'oud-Nederlands voor zien of waarnemen'
-};
-
-let gevondenWoorden = [];
-let score = 0;
-let seconden = 0;
-let timerStarted = false;
-let timerPaused = false;
-let timerInterval;
-let hintIndex = 0;
-let hintsGebruikt = 0;
-let vuurwerkInterval;
-let klikGeschiedenis = [];
-
-function renderLetters() {
-  const container = document.getElementById('woordwiel');
-  container.innerHTML = '';
-
-  const centerDiv = document.createElement('div');
-  centerDiv.className = 'letter center';
-  centerDiv.setAttribute('data-letter', centerLetter);
-  centerDiv.setAttribute('data-id', 'center');
-  centerDiv.textContent = centerLetter;
-  centerDiv.onclick = () => toggleLetter(centerLetter, 'center');
-  container.appendChild(centerDiv);
-
-  const total = outerLetters.length;
-  outerLetters.forEach((letter, i) => {
-    const angle = (360 / total) * i;
-    const div = document.createElement('div');
-    div.className = 'letter';
-    div.setAttribute('data-letter', letter);
-    div.setAttribute('data-id', `outer-${i}`);
-    div.style.setProperty('--angle', angle + 'deg');
-    div.textContent = letter;
-    div.onclick = () => toggleLetter(letter, `outer-${i}`);
-    container.appendChild(div);
-  });
-}
-
-function toggleLetter(letter, id) {
-  const lower = letter.toLowerCase();
-  const max = letterLimieten[letter.toUpperCase()] || 0;
-
-  const index = klikGeschiedenis.findIndex(k => k.letter === lower && k.id === id);
-
-  if (index !== -1) {
-    klikGeschiedenis.splice(index, 1);
-  } else {
-    const huidigeAantal = klikGeschiedenis.filter(k => k.letter === lower).length;
-    if (huidigeAantal < max) {
-      klikGeschiedenis.push({ letter: lower, id });
-    }
-  }
-
-  document.getElementById('inputwoord').value = klikGeschiedenis.map(k => k.letter).join('');
-  updateLetterHighlights();
-  startTimer();
-}
-
-function updateLetterHighlights() {
-  const letters = document.querySelectorAll('.letter');
-  letters.forEach(el => el.classList.remove('highlight'));
-
-  klikGeschiedenis.forEach(k => {
-    if (k.id) {
-      const el = document.querySelector(`.letter[data-id="${k.id}"]`);
-      if (el) el.classList.add('highlight');
-    }
-  });
-}
-
-function filterInput() {
-  const input = document.getElementById('inputwoord');
-  let waarde = input.value.toLowerCase().replace(/[^a-z]/g, '');
-  let telling = {};
-  klikGeschiedenis = [];
-
-  for (let letter of waarde) {
-    const upper = letter.toUpperCase();
-    if (!letterLimieten[upper]) continue;
-    telling[upper] = (telling[upper] || 0) + 1;
-    if (telling[upper] <= letterLimieten[upper]) {
-      klikGeschiedenis.push({ letter, id: null });
-    }
-  }
-
-  input.value = klikGeschiedenis.map(k => k.letter).join('');
-  updateLetterHighlights();
-}
-
-function rotateLetters() {
-  outerLetters = outerLetters.sort(() => Math.random() - 0.5);
-  klikGeschiedenis = [];
-  document.getElementById('inputwoord').value = '';
-  updateLetterHighlights();
-  renderLetters();
-}
-<script>
 let bevestigingHint = false;
 let bevestigingOplossing = 0;
 

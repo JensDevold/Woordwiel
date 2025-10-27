@@ -190,7 +190,7 @@
   <div id="woordenlijst">
     <h3>🧠 Gevonden woorden</h3>
     <div id="timer">Tijd: 0:00</div>
-    <div id="totaal">Woorden gevonden: 0 / 20</div>
+    <div id="totaal"></div>
     <ul id="gevonden"></ul>
   </div>
 
@@ -272,6 +272,8 @@
         div.onclick = () => toggleLetter(letter, `outer-${i}`);
         container.appendChild(div);
       });
+
+      document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
     }
 
     function toggleLetter(letter, id) {

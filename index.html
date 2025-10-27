@@ -235,7 +235,8 @@
       'penne': 'pastasoort',
       'neen': 'Vlaams voor “nee”',
       'eens': 'hetzelfde vinden',
-      'oneens': 'niet akkoord zijn'
+      'oneens': 'niet akkoord zijn',
+      'poes': 'huisdier, meestal een kat'
     };
 
     let gevondenWoorden = [];
@@ -448,10 +449,17 @@
           const nieuwItem = document.createElement('li');
           nieuwItem.innerText = `${invoer} (${uitleg})`;
           lijst.appendChild(nieuwItem);
+
+          const lengte = invoer.length;
+          if (lengte >= 5 && lengte <= 7) {
+            resultaat.innerText = `✅ ${lengte}-letterwoord gevonden!`;
+          } else {
+            resultaat.innerText = '';
+          }
+
           klikGeschiedenis = [];
           document.getElementById('inputwoord').value = '';
           updateLetterHighlights();
-          document.getElementById('resultaat').innerText = '';
           if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
             toonJanPopup();
           }

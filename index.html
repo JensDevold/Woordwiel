@@ -106,7 +106,8 @@
     body:not(.dark-mode) #resultaat {
       color: #cc0000;
     }
-    #timer, #totaal {
+    #woordenlijst #timer,
+    #woordenlijst #totaal {
       font-size: 16px;
       margin-bottom: 5px;
     }
@@ -164,12 +165,6 @@
       border-radius: 10px;
       z-index: 10000;
       box-shadow: 0 0 10px black;
-      #woordenlijst #timer,
-#woordenlijst #totaal {
-  font-size: 16px;
-  margin-bottom: 5px;
-}
-
     }
   </style>
 </head>
@@ -190,17 +185,14 @@
     <button onclick="vraagResetBevestiging()">🔄 Reset spel</button>
 
     <div id="resultaat"></div>
-    <div id="score">Score: 0</div>
-    <div id="totaal">Woorden gevonden: 0 / 20</div>
-    <div id="timer">Tijd: 0:00</div>
   </div>
 
   <div id="woordenlijst">
-  <h3>🧠 Gevonden woorden</h3>
-  <div id="timer">Tijd: 0:00</div>
-  <div id="totaal">Woorden gevonden: 0 / 20</div>
-  <ul id="gevonden"></ul>
-</div>
+    <h3>🧠 Gevonden woorden</h3>
+    <div id="timer">Tijd: 0:00</div>
+    <div id="totaal">Woorden gevonden: 0 / 20</div>
+    <ul id="gevonden"></ul>
+  </div>
 
   <div id="janPopup">
     <div>
@@ -406,7 +398,6 @@
         gevondenWoorden.push(hintWoord);
         score++;
         hintsGebruikt++;
-        document.getElementById('score').innerText = "Score: " + score;
         document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
         document.getElementById('resultaat').innerText = '';
         hintIndex++;
@@ -417,25 +408,6 @@
         }
       }
     }
-    function voerOplossingUit() {
-      const lijst = document.getElementById('gevonden');
-      const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
-      resterend.forEach(w => {
-        const uitleg = woordenUitleg[w];
-        const nieuwItem = document.createElement('li');
-        nieuwItem.innerText = `🧩 ${w} (${uitleg})`;
-        lijst.appendChild(nieuwItem);
-        gevondenWoorden.push(w);
-        score++;
-      });
-      document.getElementById('score').innerText = "Score: " + score;
-      document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
-      document.getElementById('resultaat').innerText = '';
-      klikGeschiedenis = [];
-      updateLetterHighlights();
-      toonJanPopup();
-    }
-
     function controleerWoord() {
       const invoer = klikGeschiedenis.map(k => k.letter).join('');
       const resultaat = document.getElementById('resultaat');
@@ -469,7 +441,6 @@
         if (!gevondenWoorden.includes(invoer)) {
           gevondenWoorden.push(invoer);
           score++;
-          document.getElementById('score').innerText = "Score: " + score;
           document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
           const uitleg = woordenUitleg[invoer];
           const nieuwItem = document.createElement('li');
@@ -488,6 +459,24 @@
       } else {
         resultaat.innerText = "❌ Geen geldig woord in deze puzzel.";
       }
+    }
+
+    function voerOplossingUit() {
+      const lijst = document.getElementById('gevonden');
+      const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
+      resterend.forEach(w => {
+        const uitleg = woordenUitleg[w];
+        const nieuwItem = document.createElement('li');
+        nieuwItem.innerText = `🧩 ${w} (${uitleg})`;
+        lijst.appendChild(nieuwItem);
+        gevondenWoorden.push(w);
+        score++;
+      });
+      document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
+      document.getElementById('resultaat').innerText = '';
+      klikGeschiedenis = [];
+      updateLetterHighlights();
+      toonJanPopup();
     }
 
     function startTimer() {
@@ -529,7 +518,6 @@
       clearInterval(timerInterval);
       document.getElementById('inputwoord').value = '';
       document.getElementById('gevonden').innerHTML = '';
-      document.getElementById('score').innerText = "Score: 0";
       document.getElementById('totaal').innerText = `Woorden gevonden: 0 / ${Object.keys(woordenUitleg).length}`;
       document.getElementById('timer').innerText = "Tijd: 0:00";
       document.getElementById('resultaat').innerText = '';
@@ -569,4 +557,3 @@
   </script>
 </body>
 </html>
-

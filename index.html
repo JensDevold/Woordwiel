@@ -392,7 +392,7 @@ function renderLetters() {
         const uitleg = woordenUitleg[hintWoord];
         const lijst = document.getElementById('gevonden');
         const nieuwItem = document.createElement('li');
-        nieuwItem.innerText = `${hintWoord} (${uitleg})`;
+        nieuwItem.innerText = `🔆 ${hintWoord} (${uitleg})`;
         lijst.appendChild(nieuwItem);
         gevondenWoorden.push(hintWoord);
         score++;
@@ -414,7 +414,7 @@ function voerOplossingUit() {
       resterend.forEach(w => {
         const uitleg = woordenUitleg[w];
         const nieuwItem = document.createElement('li');
-        nieuwItem.innerText = `${w} (${uitleg})`;
+        nieuwItem.innerText = `🧩 ${w} (${uitleg})`;
         lijst.appendChild(nieuwItem);
         gevondenWoorden.push(w);
         score++;
@@ -562,4 +562,3 @@ function voerOplossingUit() {
   </script>
 </body>
 </html>
-

@@ -225,6 +225,7 @@
     <div>
       <h2>🎉 Bedankt Jan!</h2>
       <p>Voor al je jaren bij ons, je vriendschap, je kennis, en je legendarische dad jokes.<br>We gaan je missen!</p>
+      <p id="popupTijd" style="margin-top:10px; font-size:16px;"></p>
       <button onclick="sluitJanPopup()">Sluiten</button>
     </div>
   </div>
@@ -492,49 +493,39 @@
       focusInput();
     }
 
-    function voerHintUit() {
-      const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
-      if (resterend.length > 0) {
-        const hintWoord = resterend[hintIndex % resterend.length];
-        const uitleg = woordenUitleg[hintWoord];
-        const lijst = document.getElementById('gevonden');
-        const nieuwItem = document.createElement('li');
-        nieuwItem.innerText = `🔆 ${hintWoord} (${uitleg})`;
-        lijst.appendChild(nieuwItem);
-        gevondenWoorden.push(hintWoord);
-        score++;
-        hintsGebruikt++;
-        document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
-        document.getElementById('resultaat').innerText = '';
-        updateVoortgang();
-        hintIndex++;
-        klikGeschiedenis = [];
-        updateLetterHighlights();
-        if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
-          toonJanPopup();
-        }
-      }
-      focusInput();
+    function toonJanPopup() {
+      document.getElementById('janPopup').style.display = 'block';
+      clearInterval(timerInterval);
+      timerPaused = true;
+
+      const min = Math.floor(seconden / 60);
+      const sec = seconden % 60;
+      document.getElementById('popupTijd').innerText = `⏱️ Je tijd: ${min}:${sec.toString().padStart(2, '0')}`;
+
+      vuurwerkInterval = setInterval(vuurwerkAnimatie, 1000);
     }
 
-    function voerOplossingUit() {
-      const lijst = document.getElementById('gevonden');
-      const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
-      resterend.forEach(w => {
-        const uitleg = woordenUitleg[w];
-        const nieuwItem = document.createElement('li');
-        nieuwItem.innerText = `🧩 ${w} (${uitleg})`;
-        lijst.appendChild(nieuwItem);
-        gevondenWoorden.push(w);
-        score++;
-      });
-      document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
-      document.getElementById('resultaat').innerText = '';
-      updateVoortgang();
-      klikGeschiedenis = [];
-      updateLetterHighlights();
-      toonJanPopup();
-      focusInput();
+    function sluitJanPopup() {
+      document.getElementById('janPopup').style.display = 'none';
+      clearInterval(vuurwerkInterval);
+      document.getElementById('vuurwerk').innerHTML = '';
+    }
+
+    function vuurwerkAnimatie() {
+      const container = document.getElementById('vuurwerk');
+      for (let i = 0; i < 20; i++) {
+        const dot = document.createElement('div');
+        dot.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        dot.style.top = Math.random() * window.innerHeight + 'px';
+        dot.style.left = Math.random() * window.innerWidth + 'px';
+        dot.style.width = '10px';
+        dot.style.height = '10px';
+        dot.style.borderRadius = '50%';
+        dot.style.position = 'absolute';
+        dot.style.animation = 'explode 3s ease-out forwards';
+        container.appendChild(dot);
+        setTimeout(() => dot.remove(), 3000);
+      }
     }
 
     function startTimer() {
@@ -585,34 +576,6 @@
       focusInput();
     }
 
-    function toonJanPopup() {
-      document.getElementById('janPopup').style.display = 'block';
-      vuurwerkInterval = setInterval(vuurwerkAnimatie, 1000);
-    }
-
-    function sluitJanPopup() {
-      document.getElementById('janPopup').style.display = 'none';
-      clearInterval(vuurwerkInterval);
-      document.getElementById('vuurwerk').innerHTML = '';
-    }
-
-    function vuurwerkAnimatie() {
-      const container = document.getElementById('vuurwerk');
-      for (let i = 0; i < 20; i++) {
-        const dot = document.createElement('div');
-        dot.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        dot.style.top = Math.random() * window.innerHeight + 'px';
-        dot.style.left = Math.random() * window.innerWidth + 'px';
-        dot.style.width = '10px';
-        dot.style.height = '10px';
-        dot.style.borderRadius = '50%';
-        dot.style.position = 'absolute';
-        dot.style.animation = 'explode 3s ease-out forwards';
-        container.appendChild(dot);
-        setTimeout(() => dot.remove(), 3000);
-      }
-    }
-
     window.onload = () => {
       renderLetters();
       focusInput();
@@ -620,4 +583,3 @@
   </script>
 </body>
 </html>
-

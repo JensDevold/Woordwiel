@@ -117,7 +117,7 @@
     li {
       margin-bottom: 6px;
     }
-#janPopup {
+    #janPopup {
       display: none;
       position: fixed;
       top: 0; left: 0;
@@ -218,21 +218,24 @@
       'penis': 'mannelijk geslachtsorgaan',
       'open': 'niet gesloten',
       'poen': 'informeel voor geld',
-      'pone': 'stellen of beweren',
       'peen': 'wortelgroente',
-      'neep': 'dialect voor raap',
       'neon': 'edelgas, vaak gebruikt in verlichting',
       'nies': 'reflex van de neus',
       'peil': 'hoogte of niveau van iets',
       'sein': 'signaal of teken',
-      'siep': 'regionaal woord voor zeef of filter',
       'peis': 'Vlaams woord voor rust of vrede',
-      'ponee': 'variant op pone',
-      'neps': 'meervoud van nep, iets dat niet echt is',
       'openen': 'iets toegankelijk maken of ontgrendelen',
-      'pien': 'verkorte meisjesnaam, ook als zelfstandig woord in dialect',
-      'seep': 'dialect voor zeep',
-      'sien': 'oud-Nederlands voor zien of waarnemen'
+      'peso': 'munteenheid in Latijns-Amerika',
+      'speen': 'rubberen zuigstuk voor baby’s',
+      'soep': 'vloeibare maaltijd',
+      'pees': 'verbinding tussen spier en bot',
+      'eisen': 'voorwaarden stellen',
+      'noen': 'oude term voor middaguur',
+      'senne': 'voornaam, ook rivier in Brussel',
+      'penne': 'pastasoort',
+      'neen': 'Vlaams voor “nee”',
+      'eens': 'hetzelfde vinden',
+      'oneens': 'niet akkoord zijn'
     };
 
     let gevondenWoorden = [];
@@ -245,9 +248,7 @@
     let hintsGebruikt = 0;
     let vuurwerkInterval;
     let klikGeschiedenis = [];
-    let bevestigingHint = false;
-    let bevestigingOplossingStap = 0;
-function renderLetters() {
+    function renderLetters() {
       const container = document.getElementById('woordwiel');
       container.innerHTML = '';
 
@@ -315,7 +316,11 @@ function renderLetters() {
         if (!letterLimieten[upper]) continue;
         telling[upper] = (telling[upper] || 0) + 1;
         if (telling[upper] <= letterLimieten[upper]) {
-          klikGeschiedenis.push({ letter, id: null });
+          const alle = Array.from(document.querySelectorAll(`.letter[data-letter="${upper}"]`));
+          const alGebruikt = klikGeschiedenis.map(k => k.id);
+          const beschikbaar = alle.find(el => !alGebruikt.includes(el.getAttribute('data-id')));
+          const id = beschikbaar ? beschikbaar.getAttribute('data-id') : null;
+          klikGeschiedenis.push({ letter, id });
         }
       }
 
@@ -362,13 +367,9 @@ function renderLetters() {
     }
 
     function toonHint() {
-      if (!bevestigingHint) {
-        bevestigingHint = true;
-        toonBevestiging("Weet je zeker dat je een hint wilt?", () => {
-          bevestigingHint = false;
-          voerHintUit();
-        }, () => bevestigingHint = false);
-      }
+      toonBevestiging("Weet je zeker dat je een hint wilt?", () => {
+        voerHintUit();
+      }, () => {});
     }
 
     function toonOplossing() {
@@ -408,7 +409,7 @@ function renderLetters() {
         }
       }
     }
-function voerOplossingUit() {
+    function voerOplossingUit() {
       const lijst = document.getElementById('gevonden');
       const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
       resterend.forEach(w => {
@@ -517,8 +518,6 @@ function voerOplossingUit() {
       hintIndex = 0;
       hintsGebruikt = 0;
       klikGeschiedenis = [];
-      bevestigingHint = false;
-      bevestigingOplossingStap = 0;
       clearInterval(timerInterval);
       document.getElementById('inputwoord').value = '';
       document.getElementById('gevonden').innerHTML = '';

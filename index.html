@@ -21,17 +21,21 @@
       top: 10px;
       right: 10px;
       font-size: 14px;
-      background: none;
+      background-color: #333;
+      color: white;
       border: 1px solid white;
       border-radius: 5px;
-      cursor: pointer;
-      color: white;
       padding: 4px 8px;
+      width: auto;
+      max-width: 150px;
+      white-space: nowrap;
+      cursor: pointer;
       z-index: 1000;
     }
     body:not(.dark-mode) #theme-toggle {
-      border: 1px solid #333;
+      background-color: #f0f0f0;
       color: #333;
+      border: 1px solid #333;
     }
     #spel, #woordenlijst {
       display: inline-block;
@@ -190,7 +194,7 @@
   </style>
 </head>
 <body class="dark-mode">
-  <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+  <button id="theme-toggle" onclick="toggleTheme()">🌙 Donker / Licht</button>
 
   <div id="spel">
     <h1>🎨 Het Wiel van de Lorre</h1>

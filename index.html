@@ -119,6 +119,26 @@
     li {
       margin-bottom: 6px;
     }
+    #voortgangContainer {
+      width: 100%;
+      background-color: #444;
+      height: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    #voortgangBalk {
+      height: 100%;
+      width: 0%;
+      background-color: #00cc66;
+      transition: width 0.5s ease;
+    }
+    body:not(.dark-mode) #voortgangContainer {
+      background-color: #ccc;
+    }
+    body:not(.dark-mode) #voortgangBalk {
+      background-color: #33aa33;
+    }
     #janPopup {
       display: none;
       position: fixed;
@@ -192,6 +212,9 @@
     <div id="timer">Tijd: 0:00</div>
     <div id="totaal"></div>
     <ul id="gevonden"></ul>
+    <div id="voortgangContainer">
+      <div id="voortgangBalk"></div>
+    </div>
   </div>
 
   <div id="janPopup">
@@ -389,27 +412,11 @@
       }, () => {});
     }
 
-    function voerHintUit() {
-      const resterend = Object.keys(woordenUitleg).filter(w => !gevondenWoorden.includes(w));
-      if (resterend.length > 0) {
-        const hintWoord = resterend[hintIndex % resterend.length];
-        const uitleg = woordenUitleg[hintWoord];
-        const lijst = document.getElementById('gevonden');
-        const nieuwItem = document.createElement('li');
-        nieuwItem.innerText = `🔆 ${hintWoord} (${uitleg})`;
-        lijst.appendChild(nieuwItem);
-        gevondenWoorden.push(hintWoord);
-        score++;
-        hintsGebruikt++;
-        document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
-        document.getElementById('resultaat').innerText = '';
-        hintIndex++;
-        klikGeschiedenis = [];
-        updateLetterHighlights();
-        if (gevondenWoorden.length === Object.keys(woordenUitleg).length) {
-          toonJanPopup();
-        }
-      }
+    function updateVoortgang() {
+      const totaal = Object.keys(woordenUitleg).length;
+      const gevonden = gevondenWoorden.length;
+      const percentage = Math.round((gevonden / totaal) * 100);
+      document.getElementById('voortgangBalk').style.width = percentage + '%';
     }
     function controleerWoord() {
       const invoer = klikGeschiedenis.map(k => k.letter).join('');
@@ -457,6 +464,7 @@
             resultaat.innerText = '';
           }
 
+          updateVoortgang();
           klikGeschiedenis = [];
           document.getElementById('inputwoord').value = '';
           updateLetterHighlights();
@@ -484,6 +492,7 @@
       });
       document.getElementById('totaal').innerText = `Woorden gevonden: ${gevondenWoorden.length} / ${Object.keys(woordenUitleg).length}`;
       document.getElementById('resultaat').innerText = '';
+      updateVoortgang();
       klikGeschiedenis = [];
       updateLetterHighlights();
       toonJanPopup();
@@ -531,6 +540,7 @@
       document.getElementById('totaal').innerText = `Woorden gevonden: 0 / ${Object.keys(woordenUitleg).length}`;
       document.getElementById('timer').innerText = "Tijd: 0:00";
       document.getElementById('resultaat').innerText = '';
+      document.getElementById('voortgangBalk').style.width = '0%';
       updateLetterHighlights();
       renderLetters();
     }
@@ -563,7 +573,11 @@
       }
     }
 
-    renderLetters();
+    // Focus automatisch op het typvak bij laden
+    window.onload = () => {
+      renderLetters();
+      document.getElementById('inputwoord').focus();
+    };
   </script>
 </body>
 </html>

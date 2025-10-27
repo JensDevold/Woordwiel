@@ -245,6 +245,8 @@
     let hintsGebruikt = 0;
     let vuurwerkInterval;
     let klikGeschiedenis = [];
+    let bevestigingHint = false;
+    let bevestigingOplossingStap = 0;
 function renderLetters() {
       const container = document.getElementById('woordwiel');
       container.innerHTML = '';
@@ -329,35 +331,6 @@ function renderLetters() {
       renderLetters();
     }
 
-    let bevestigingHint = false;
-    let bevestigingOplossing = 0;
-
-    function toonHint() {
-      if (!bevestigingHint) {
-        bevestigingHint = true;
-        toonBevestiging("Weet je zeker dat je een hint wilt?", () => {
-          bevestigingHint = false;
-          voerHintUit();
-        }, () => bevestigingHint = false);
-        return;
-      }
-    }
-
-    function toonOplossing() {
-      bevestigingOplossing++;
-      if (bevestigingOplossing === 1) {
-        toonBevestiging("Weet je zeker dat je de oplossing wilt tonen?", () => {
-          bevestigingOplossing++;
-          toonOplossing();
-        }, () => bevestigingOplossing = 0);
-        return;
-      }
-      if (bevestigingOplossing === 2) {
-        bevestigingOplossing = 0;
-        voerOplossingUit();
-      }
-    }
-
     function toonBevestiging(tekst, bevestigActie, annuleerActie) {
       const bestaande = document.getElementById('bevestigingBox');
       if (bestaande) bestaande.remove();
@@ -366,16 +339,50 @@ function renderLetters() {
       box.id = 'bevestigingBox';
       box.innerHTML = `
         <p>${tekst}</p>
-        <button onclick="document.getElementById('bevestigingBox').remove(); (${bevestigActie.toString()})();">✅ Ja</button>
-        <button onclick="document.getElementById('bevestigingBox').remove(); ${annuleerActie ? '(' + annuleerActie.toString() + ')();' : ''}">❌ Nee</button>
+        <button id="jaBtn">✅ Ja</button>
+        <button id="neeBtn">❌ Nee</button>
       `;
       document.body.appendChild(box);
+
+      document.getElementById('jaBtn').onclick = () => {
+        box.remove();
+        bevestigActie();
+      };
+      document.getElementById('neeBtn').onclick = () => {
+        box.remove();
+        if (annuleerActie) annuleerActie();
+      };
+
       setTimeout(() => {
         if (document.body.contains(box)) {
           box.remove();
           if (annuleerActie) annuleerActie();
         }
       }, 10000);
+    }
+
+    function toonHint() {
+      if (!bevestigingHint) {
+        bevestigingHint = true;
+        toonBevestiging("Weet je zeker dat je een hint wilt?", () => {
+          bevestigingHint = false;
+          voerHintUit();
+        }, () => bevestigingHint = false);
+      }
+    }
+
+    function toonOplossing() {
+      if (bevestigingOplossingStap === 0) {
+        bevestigingOplossingStap = 1;
+        toonBevestiging("Weet je zeker dat je de oplossing wilt tonen?", () => {
+          bevestigingOplossingStap = 2;
+        }, () => bevestigingOplossingStap = 0);
+      } else if (bevestigingOplossingStap === 2) {
+        toonBevestiging("Echt zeker? Dit toont alle antwoorden!", () => {
+          bevestigingOplossingStap = 0;
+          voerOplossingUit();
+        }, () => bevestigingOplossingStap = 0);
+      }
     }
 
     function voerHintUit() {
@@ -511,7 +518,7 @@ function voerOplossingUit() {
       hintsGebruikt = 0;
       klikGeschiedenis = [];
       bevestigingHint = false;
-      bevestigingOplossing = 0;
+      bevestigingOplossingStap = 0;
       clearInterval(timerInterval);
       document.getElementById('inputwoord').value = '';
       document.getElementById('gevonden').innerHTML = '';
@@ -555,3 +562,4 @@ function voerOplossingUit() {
   </script>
 </body>
 </html>
+
